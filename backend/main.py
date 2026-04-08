@@ -1,11 +1,13 @@
+import logging
+import os
+
+from dotenv import load_dotenv
+import tensorflow as tf
 from fastapi import FastAPI, File, UploadFile, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-import os
-from dotenv import load_dotenv
-import tensorflow as tf
+
 from model_utils import predict
-import logging
 from chatbot_service import (
     get_disease_advice,
     generate_initial_chatbot_message,
