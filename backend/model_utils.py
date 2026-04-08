@@ -37,17 +37,31 @@ def predict(image_file, model, class_names):
         "severity": str
     }
     """
+    import time
+    start_time = time.time()
+    
     # Preprocess image
+    logger.info("Starting image preprocessing...")
     image_array = preprocess_image(image_file)
+    preprocess_time = time.time() - start_time
+    logger.info(f"Image preprocessing completed in {preprocess_time:.2f}s")
     
     # Make prediction
+    logger.info("Starting model prediction...")
+    prediction_start = time.time()
     predictions = model.predict(image_array, verbose=0)
     confidence = float(np.max(predictions[0]))
     predicted_class_idx = np.argmax(predictions[0])
     predicted_class_name = class_names[predicted_class_idx]
     
+    prediction_time = time.time() - prediction_start
+    logger.info(f"Model prediction completed in {prediction_time:.2f}s")
+    
     # Get severity classification
     severity_info = get_severity_prediction(predicted_class_name)
+    
+    total_time = time.time() - start_time
+    logger.info(f"Total prediction time: {total_time:.2f}s")
     
     return {
         "class_name": predicted_class_name,
