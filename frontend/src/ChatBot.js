@@ -380,12 +380,6 @@ const ChatBot = ({ prediction }) => {
     return "#4caf50";
   };
 
-  const getConfidenceLabel = () => {
-    if (confidenceTier === 1) return "Low";
-    if (confidenceTier === 2) return "Moderate";
-    return "High";
-  };
-
   return (
     <Card className={classes.chatCard}>
       {/* Header */}
