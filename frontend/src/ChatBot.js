@@ -50,8 +50,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "rgba(76, 175, 80, 0.08)",
   },
   messageContainer: {
-    maxHeight: 400,
-    overflowY: "auto",
     padding: 16,
     backgroundColor: "#fafafa",
     marginBottom: 16,
@@ -172,6 +170,9 @@ const ChatBot = ({ prediction }) => {
   // Extract base API URL (remove /predict if present for chat endpoint)
   const PREDICT_URL = process.env.REACT_APP_API_URL || "http://localhost:8000/predict";
   const API_BASE_URL = PREDICT_URL.replace("/predict", "") || "http://localhost:8000";
+  
+  // Backend chat endpoint is on different port (8001) while API is on 8000
+  const CHAT_BASE_URL = "http://localhost:8000";
 
   // Initialize session and fetch initial message
   useEffect(() => {
@@ -188,45 +189,76 @@ const ChatBot = ({ prediction }) => {
 
         // Fetch initial message from chatbot
         setIsLoading(true);
-        const response = await axios.post(`${API_BASE_URL}/chat`, {
-          session_id: newSessionId,
-          message: "", // Empty message triggers initial greeting
-          prediction_data: {
-            plant_type: prediction.plant_type || "Unknown",
-            disease_name: prediction.class_name || "Unknown",
-            confidence: prediction.confidence || 0,
-            severity: prediction.prediction || "Unknown",
-            top_predictions: prediction.top_predictions || [],
-          },
-        });
+        
+        try {
+          const response = await axios.post(`${CHAT_BASE_URL}/chat`, {
+            session_id: newSessionId,
+            message: "", // Empty message triggers initial greeting
+            prediction_data: {
+              plant_type: prediction.plant_type || "Unknown",
+              disease_name: prediction.class_name || "Unknown",
+              confidence: prediction.confidence || 0,
+              severity: prediction.prediction || "Unknown",
+              top_predictions: prediction.top_predictions || [],
+            },
+          }, { timeout: 5000 });
 
-        if (response.status === 200) {
-          const data = response.data;
-          setConfidenceTier(data.confidence_tier);
-          setRemainingRateLimit(data.remaining_rate_limit);
+          if (response.status === 200) {
+            const data = response.data;
+            setConfidenceTier(data.confidence_tier);
+            setRemainingRateLimit(data.remaining_rate_limit);
 
-          if (data.confidence_tier === 1) {
-            // Low confidence - show error
-            setError(data.answer);
-          } else {
-            // Add initial message
-            setMessages([
-              {
-                role: "assistant",
-                content: data.answer,
-                urgency_level: data.urgency_level,
-                safe_next_steps: data.safe_next_steps || [],
-                follow_up_questions: data.follow_up_questions || [],
-                disclaimer: data.disclaimer,
-              },
-            ]);
+            if (data.confidence_tier === 1) {
+              // Low confidence - show error
+              setError(data.answer);
+            } else {
+              // Add initial message
+              setMessages([
+                {
+                  role: "assistant",
+                  content: data.answer,
+                  urgency_level: data.urgency_level,
+                  safe_next_steps: data.safe_next_steps || [],
+                  follow_up_questions: data.follow_up_questions || [],
+                  disclaimer: data.disclaimer,
+                },
+              ]);
+            }
+
+            setInitialMessageFetched(true);
           }
-
+        } catch (axiosErr) {
+          console.error("Chatbot endpoint error:", axiosErr.message);
+          
+          // If chat endpoint fails, show helpful message instead of blank error
+          if (axiosErr.code === 'ECONNABORTED' || axiosErr.response?.status === 404) {
+            setError("Chatbot service not available. Backend server may not be running. Please ensure the backend is started on port 8001.");
+          } else if (axiosErr.response?.status === 500) {
+            setError("Chatbot service error. Please check backend logs and refresh the page.");
+          } else {
+            setError("Unable to connect to chatbot service. Please make sure backend is running.");
+          }
+          
+          // Set default values so the UI doesn't break
+          setConfidenceTier(2);
           setInitialMessageFetched(true);
+          
+          // Add a gentle fallback message
+          setMessages([
+            {
+              role: "assistant",
+              content: `I detected: ${prediction.class_name?.replace(/___/g, " → ") || "Unknown"}\n\nConfidence: ${Math.round((prediction.confidence || 0) * 100)}%\nSeverity: ${prediction.prediction || "Unknown"}\n\nChatbot service is temporarily unavailable, but your prediction results are shown above.`,
+              urgency_level: "low",
+              safe_next_steps: [],
+              follow_up_questions: [],
+              disclaimer: "Chatbot service is offline",
+            },
+          ]);
         }
       } catch (err) {
-        console.error("Error fetching initial message:", err);
-        setError("Failed to initialize chatbot. Please refresh the page.");
+        console.error("Error in chat initialization:", err);
+        setError("An unexpected error occurred. Please refresh the page.");
+        setInitialMessageFetched(true);
       } finally {
         setIsLoading(false);
       }
@@ -254,7 +286,7 @@ const ChatBot = ({ prediction }) => {
       setMessages((prev) => [...prev, { role: "user", content: messageToSend }]);
 
       // Send to backend
-      const response = await axios.post(`${API_BASE_URL}/chat`, {
+      const response = await axios.post(`${CHAT_BASE_URL}/chat`, {
         session_id: sessionId,
         message: messageToSend,
         prediction_data: {

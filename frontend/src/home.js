@@ -8,7 +8,7 @@ import Container from "@material-ui/core/Container";
 import React from "react";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import { Paper, CardActionArea, CardMedia, Grid, TableContainer, Table, TableBody, TableHead, TableRow, TableCell, Button, CircularProgress } from "@material-ui/core";
+import { Paper, CardActionArea, CardMedia, Grid, Button, CircularProgress } from "@material-ui/core";
 import cblogo from "./cblogo.png";
 import bgImage from "./bg.png";
 import { DropzoneArea } from 'material-ui-dropzone';
@@ -47,13 +47,13 @@ const useStyles = makeStyles((theme) => ({
     color: "#ffffff",
     fontSize: "16px",
     fontWeight: 900,
-    background: "linear-gradient(135deg, #be6a77 0%, #a55668 100%)",
+    background: "linear-gradient(135deg, #4d99d7 0%, #1e8feb 100%)",
     boxShadow: "0 4px 15px rgba(190, 106, 119, 0.3)",
     textTransform: "uppercase",
     letterSpacing: "1px",
     transition: "all 0.3s ease",
     "&:hover": {
-      boxShadow: "0 6px 20px rgba(190, 106, 119, 0.4)",
+      boxShadow: "0 6px 20px rgb(111, 128, 212)",
       transform: "translateY(-2px)",
     }
   },
@@ -203,7 +203,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 12,
   },
   appbar: {
-    background: 'linear-gradient(135deg, #be6a77 0%, #a55668 100%)',
+    background: 'linear-gradient(135deg, #1f2f52 0%, #5182b0 100%)',
     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
     color: 'white'
   },
@@ -211,7 +211,71 @@ const useStyles = makeStyles((theme) => ({
     color: '#be6a77 !important',
     marginBottom: '16px',
   },
+  '@keyframes slideInUp': {
+    from: {
+      opacity: 0,
+      transform: 'translateY(100px)',
+    },
+    to: {
+      opacity: 1,
+      transform: 'translateY(0)',
+    },
+  },
+  '@keyframes float': {
+    '0%, 100%': {
+      transform: 'translateY(0px)',
+    },
+    '50%': {
+      transform: 'translateY(-30px)',
+    },
+  },
 }));
+const featureData = [
+  {
+    icon: "🔬",
+    title: "AI-Powered Detection",
+    description: "Advanced machine learning model trained on thousands of leaf images"
+  },
+  {
+    icon: "⚡",
+    title: "Instant Results",
+    description: "Get disease diagnosis in seconds with high accuracy"
+  },
+  {
+    icon: "📊",
+    title: "Detailed Analysis",
+    description: "Comprehensive confidence scores and severity assessment"
+  },
+  {
+    icon: "💡",
+    title: "Smart Recommendations",
+    description: "Actionable advice for treatment and plant care"
+  }
+];
+
+const stepsData = [
+  {
+    number: "1",
+    title: "Capture",
+    description: "Take a clear photo of the affected leaf"
+  },
+  {
+    number: "2",
+    title: "Upload",
+    description: "Upload the image to our platform"
+  },
+  {
+    number: "3",
+    title: "Analyze",
+    description: "AI analyzes the leaf for diseases"
+  },
+  {
+    number: "4",
+    title: "Get Advice",
+    description: "Receive personalized treatment recommendations"
+  }
+];
+
 export const ImageUpload = () => {
   const classes = useStyles();
   const [selectedFile, setSelectedFile] = useState();
@@ -222,17 +286,35 @@ export const ImageUpload = () => {
 
   const sendFile = async () => {
     if (image) {
-      let formData = new FormData();
-      formData.append("file", selectedFile);
-      let res = await axios({
-        method: "post",
-        url: process.env.REACT_APP_API_URL,
-        data: formData,
-      });
-      if (res.status === 200) {
-        setData(res.data);
+      try {
+        let formData = new FormData();
+        formData.append("file", selectedFile);
+        let res = await axios({
+          method: "post",
+          url: process.env.REACT_APP_API_URL,
+          data: formData,
+          timeout: 60000, // 60 second timeout
+        });
+        if (res.status === 200) {
+          setData(res.data);
+        }
+      } catch (error) {
+        console.error("Upload error:", error);
+        if (error.code === 'ECONNABORTED') {
+          alert('Request timed out. Please try again with a smaller image or check if the backend is running.');
+        } else if (error.response?.status === 400) {
+          alert('Invalid image format. Please upload a valid image file.');
+        } else if (error.response?.status === 500) {
+          alert('Server error. Please check the backend logs.');
+        } else {
+          alert('Failed to upload image. Please ensure the backend API is running on ' + process.env.REACT_APP_API_URL);
+        }
+        setImage(false);
+        setSelectedFile(null);
+        setPreview(null);
+      } finally {
+        setIsloading(false);
       }
-      setIsloading(false);
     }
   }
 
@@ -277,7 +359,7 @@ export const ImageUpload = () => {
 
   return (
     <React.Fragment>
-      <AppBar position="static" className={classes.appbar}>
+      <AppBar position="sticky" className={classes.appbar}>
         <Toolbar style={{ padding: "12px 24px" }}>
           <Typography className={classes.title} variant="h6" noWrap style={{ fontWeight: 800, letterSpacing: "0.5px" }}>
             🌿 Agriguard: Leaf Disease Detection
@@ -286,46 +368,107 @@ export const ImageUpload = () => {
           <Avatar src={cblogo} style={{ width: 50, height: 50 }}></Avatar>
         </Toolbar>
       </AppBar>
-      <Container maxWidth={false} className={classes.mainContainer} disableGutters={true}>
-        <Grid
-          className={classes.gridContainer}
-          container
-          direction="row"
-          justifyContent="center"
-          alignItems="center"
-          spacing={2}
-        >
-          <Grid item xs={12}>
-            <Card className={classes.imageCard}>
-              {image && (
-                <CardActionArea style={{ width: '100%', height: '100%' }}>
-                  <CardMedia
-                    className={classes.media}
-                    image={preview}
-                    component="image"
-                    title="Uploaded Leaf"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                </CardActionArea>
-              )}
-              {!image && (
-                <div className={classes.imageCardEmpty}>
-                  <CardContent className={classes.content}>
-                    <DropzoneArea
-                      acceptedFiles={['image/*']}
-                      dropzoneText={"📸 Upload a leaf image for AI-powered disease detection"}
-                      onChange={onSelectFile}
-                      maxFileSize={50000000}
-                      filesLimit={1}
-                      showFileNamesInPreview={false}
-                      showPreviewsInDropzone={false}
-                    />
-                  </CardContent>
+
+      {/* Hero Section with Upload Box */}
+      <div style={{
+        backgroundImage: `linear-gradient(135deg, rgba(31, 47, 82, 0.92) 0%, rgba(44, 62, 115, 0.92) 100%), url("/farm.jpg")`,
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        backgroundSize: 'cover',
+        backgroundAttachment: 'fixed',
+        minHeight: "650px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "relative",
+        overflow: "hidden",
+        paddingTop: "60px",
+        paddingBottom: "60px"
+      }}>
+        <Container maxWidth="lg" style={{ position: "relative", zIndex: 1 }}>
+          <Grid container spacing={4} alignItems="center">
+            <Grid item xs={12} md={6}>
+              <Typography variant="h2" style={{
+                color: "white",
+                fontWeight: 900,
+                marginBottom: "24px",
+                fontSize: { xs: "2rem", md: "3.5rem" }
+              }}>
+                Protect Your Plants with AI
+              </Typography>
+              <Typography variant="h6" style={{
+                color: "rgba(255,255,255,0.95)",
+                marginBottom: "32px",
+                fontSize: "1.1rem",
+                lineHeight: 1.7
+              }}>
+                Instantly detect leaf diseases using advanced AI technology. Get expert recommendations to keep your plants healthy and thriving.
+              </Typography>
+              <div style={{ display: "flex", gap: "16px", alignItems: "center", flexWrap: "wrap" }}>
+                <div style={{
+                  display: "flex",
+                  gap: "8px",
+                  alignItems: "center",
+                  color: "white",
+                  fontSize: "14px",
+                  fontWeight: 600
+                }}>
+                  <span style={{ fontSize: "20px" }}>✓</span> Instant Results
                 </div>
-              )}
-            </Card>
-              
-              {/* Confidence */}
+                <div style={{
+                  display: "flex",
+                  gap: "8px",
+                  alignItems: "center",
+                  color: "white",
+                  fontSize: "14px",
+                  fontWeight: 600
+                }}>
+                  <span style={{ fontSize: "20px" }}>✓</span> 95% Accuracy
+                </div>
+                <div style={{
+                  display: "flex",
+                  gap: "8px",
+                  alignItems: "center",
+                  color: "white",
+                  fontSize: "14px",
+                  fontWeight: 600
+                }}>
+                  <span style={{ fontSize: "20px" }}>✓</span> Smart Advice
+                </div>
+              </div>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              {/* Upload Box */}
+              <Card className={classes.imageCard}>
+                {image && (
+                  <CardActionArea style={{ width: '100%', height: '100%' }}>
+                    <CardMedia
+                      className={classes.media}
+                      image={preview}
+                      component="image"
+                      title="Uploaded Leaf"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  </CardActionArea>
+                )}
+                {!image && (
+                  <div className={classes.imageCardEmpty}>
+                    <CardContent className={classes.content}>
+                      <DropzoneArea
+                        acceptedFiles={['image/*']}
+                        dropzoneText={"📸 Upload a leaf image for AI-powered disease detection"}
+                        onChange={onSelectFile}
+                        maxFileSize={50000000}
+                        filesLimit={1}
+                        showFileNamesInPreview={false}
+                        showPreviewsInDropzone={false}
+                      />
+                    </CardContent>
+                  </div>
+                )}
+              </Card>
+
+              {/* Confidence Display */}
               {data && (
                 <CardContent className={classes.detail} style={{ paddingBottom: 0 }}>
                   <div style={{ 
@@ -419,46 +562,198 @@ export const ImageUpload = () => {
                   </div>
                 </Paper>
               )}
-                            
-              
-              {isLoading && <CardContent className={classes.detail} style={{ paddingTop: 60, paddingBottom: 60 }}>
-                <CircularProgress size={80} color="secondary" className={classes.loader} />
-                <Typography style={{ marginTop: 24, fontSize: 18, fontWeight: 700, color: "#be6a77" }}>
-                  🔄 Analyzing Image...
-                </Typography>
-                <Typography style={{ marginTop: 8, fontSize: 12, color: "#999" }}>
-                  Powered by AI
+
+              {isLoading && <CardContent className={classes.detail} style={{ paddingTop: 40, paddingBottom: 40 }}>
+                <CircularProgress size={60} color="secondary" className={classes.loader} />
+                <Typography style={{ marginTop: 24, fontSize: 16, fontWeight: 700, color: "#be6a77" }}>
+                  🔄 Analyzing...
                 </Typography>
               </CardContent>}
-          </Grid>
-          
-          {/* ChatBot Component - appears when prediction data is available */}
-          {data && (
-            <Grid item xs={12}>
-              <ChatBot 
-                prediction={{
-                  plant_type: data.class_name?.split("___")[0] || "Unknown",
-                  class_name: data.class_name?.replace(/___/g, " → ") || "Unknown",
-                  confidence: data.confidence || 0,
-                  prediction: data.prediction || "Unknown",
-                  top_predictions: Object.entries(data.all_predictions || {}).map(([name, conf]) => ({
-                    name: name.replace(/___/g, " → "),
-                    confidence: conf
-                  })).slice(0, 5)
-                }}
-              />
-            </Grid>
-          )}
-          
-          {data &&
-            <Grid item className={classes.buttonGrid} >
 
-              <ColorButton variant="contained" className={classes.clearButton} color="primary" component="span" size="large" onClick={clearData} startIcon={<Clear fontSize="large" />}>
-                Scan Another Leaf
-              </ColorButton>
-            </Grid>}
-        </Grid >
-      </Container >
-    </React.Fragment >
+              {data && (
+                <Grid item className={classes.buttonGrid} style={{ marginTop: "16px" }}>
+                  <ColorButton variant="contained" className={classes.clearButton} color="primary" component="span" size="large" onClick={clearData} startIcon={<Clear fontSize="large" />}>
+                    Scan Another Leaf
+                  </ColorButton>
+                </Grid>
+              )}
+            </Grid>
+          </Grid>
+        </Container>
+      </div>
+
+      {/* ChatBot Component - Fixed floating widget in bottom right */}
+      {data && (
+        <div style={{
+          position: 'fixed',
+          bottom: '40px',
+          right: '20px',
+          width: '480px',
+          maxHeight: '650px',
+          zIndex: 999,
+          boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
+          borderRadius: '16px',
+          overflow: 'auto',
+          background: 'white',
+          border: '1px solid rgba(0,0,0,0.05)',
+          opacity: 1,
+          animation: 'slideInUp 0.4s ease-out',
+          scrollBehavior: 'smooth',
+          '&::-webkit-scrollbar': {
+            width: '8px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: 'transparent',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            borderRadius: '4px',
+          },
+          '&::-webkit-scrollbar-thumb:hover': {
+            background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
+          },
+        }}>
+          <ChatBot 
+            prediction={{
+              plant_type: data.class_name?.split("___")[0] || "Unknown",
+              class_name: data.class_name?.replace(/___/g, " → ") || "Unknown",
+              confidence: data.confidence || 0,
+              prediction: data.prediction || "Unknown",
+              top_predictions: Object.entries(data.all_predictions || {}).map(([name, conf]) => ({
+                name: name.replace(/___/g, " → "),
+                confidence: conf
+              })).slice(0, 5)
+            }}
+          />
+        </div>
+      )}
+
+      {/* Features Section */}
+      <Container maxWidth="lg" style={{ paddingTop: "100px", paddingBottom: "120px" }}>
+        <Typography variant="h3" style={{
+          textAlign: "center",
+          fontWeight: 900,
+          marginBottom: "60px",
+          color: "#2c1847"
+        }}>
+          Why Choose Agriguard?
+        </Typography>
+        <Grid container spacing={4}>
+          {featureData.map((feature, index) => (
+            <Grid item xs={12} sm={6} md={3} key={index}>
+              <div style={{
+                background: "linear-gradient(135deg, #2c5282 0%, #3d66a6 100%)",
+                padding: "40px 30px",
+                borderRadius: "20px",
+                textAlign: "center",
+                transition: "all 0.3s ease",
+                cursor: "pointer",
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                boxShadow: "0 8px 25px rgba(44, 82, 130, 0.2)"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-10px)";
+                e.currentTarget.style.boxShadow = "0 20px 50px rgba(44, 82, 130, 0.4)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 8px 25px rgba(44, 82, 130, 0.2)";
+              }}>
+                <div style={{ fontSize: "56px", marginBottom: "16px", filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.1))" }}>
+                  {feature.icon}
+                </div>
+                <Typography variant="h6" style={{
+                  fontWeight: 800,
+                  marginBottom: "12px",
+                  color: "white"
+                }}>
+                  {feature.title}
+                </Typography>
+                <Typography style={{
+                  color: "rgba(255,255,255,0.9)",
+                  fontSize: "14px",
+                  lineHeight: 1.6
+                }}>
+                  {feature.description}
+                </Typography>
+              </div>
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
+
+      {/* How It Works Section */}
+      <div style={{
+        background: "linear-gradient(135deg, #2c5282 0%, #3d66a6 100%)",
+        paddingTop: "80px",
+        paddingBottom: "80px"
+      }}>
+        <Container maxWidth="lg">
+          <Typography variant="h3" style={{
+            textAlign: "center",
+            fontWeight: 900,
+            marginBottom: "80px",
+            color: "white"
+          }}>
+            How It Works
+          </Typography>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "30px", flexWrap: "nowrap", overflowX: "auto", paddingBottom: "20px" }}>
+            {stepsData.map((step, index) => (
+              <div key={index} style={{ display: "flex", alignItems: "center", gap: "30px" }}>
+                <div style={{ textAlign: "center", minWidth: "140px" }}>
+                  <div style={{
+                    width: "80px",
+                    height: "80px",
+                    background: "linear-gradient(135deg, #4a7ba7 0%, #5c8dbf 100%)",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "36px",
+                    fontWeight: 900,
+                    color: "white",
+                    boxShadow: "0 8px 20px rgba(0,0,0,0.25)",
+                    border: "3px solid rgba(255,255,255,0.3)",
+                    margin: "0 auto"
+                  }}>
+                    {step.number}
+                  </div>
+                  <Typography variant="h6" style={{
+                    color: "white",
+                    fontWeight: 800,
+                    marginTop: "20px",
+                    marginBottom: "8px",
+                    fontSize: "16px"
+                  }}>
+                    {step.title}
+                  </Typography>
+                  <Typography style={{
+                    color: "rgba(255,255,255,0.85)",
+                    fontSize: "13px",
+                    lineHeight: 1.5
+                  }}>
+                    {step.description}
+                  </Typography>
+                </div>
+                {index < stepsData.length - 1 && (
+                  <div style={{
+                    fontSize: "32px",
+                    color: "rgba(255,255,255,0.7)",
+                    fontWeight: "bold",
+                    minWidth: "30px",
+                    textAlign: "center"
+                  }}>
+                    →
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </Container>
+      </div>
+    </React.Fragment>
   );
 };
