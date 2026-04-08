@@ -66,7 +66,7 @@ async def startup_event():
         # Initialize chatbot service
         initialize_chatbot_service()
         
-        # Define class names (38 Plant Village classes - in training order)
+        # Define class names (38 Plant Village classes - in alphabetical order as per training)
         class_names = [
             "Apple___Apple_scab",
             "Apple___Black_rot",

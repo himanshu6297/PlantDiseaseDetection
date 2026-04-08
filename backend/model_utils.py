@@ -11,7 +11,7 @@ def preprocess_image(image_file, img_size=(128, 128)):
     """
     Preprocess image for model prediction
     - Resize to (128, 128)
-    - Normalize pixel values
+    - Normalize pixel values to 0-1 range
     """
     # Read image from uploaded file
     image = Image.open(io.BytesIO(image_file)).convert("RGB")
@@ -21,6 +21,9 @@ def preprocess_image(image_file, img_size=(128, 128)):
     
     # Convert to array
     image_array = np.array(image, dtype=np.float32)
+    
+    # Normalize pixel values from 0-255 to 0-1
+    image_array = image_array / 255.0
     
     # Add batch dimension
     image_array = np.expand_dims(image_array, axis=0)
