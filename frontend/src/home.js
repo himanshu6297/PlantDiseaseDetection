@@ -384,63 +384,88 @@ export const ImageUpload = () => {
         paddingBottom: "40px"
       }}>
         <Container maxWidth="lg" style={{ position: "relative", zIndex: 1 }}>
-          {/* Header Section */}
-          <div style={{ marginBottom: "40px" }}>
-            <Typography variant="h2" style={{
-              color: "white",
-              fontWeight: 900,
-              marginBottom: "16px",
-              fontSize: { xs: "2rem", md: "3.5rem" }
-            }}>
-              Protect Your Plants with AI
-            </Typography>
-            <Typography variant="h6" style={{
-              color: "rgba(255,255,255,0.95)",
-              marginBottom: "20px",
-              fontSize: "1.1rem",
-              lineHeight: 1.7,
-              maxWidth: "600px"
-            }}>
-              Instantly detect leaf diseases using advanced AI technology. Get expert recommendations to keep your plants healthy and thriving.
-            </Typography>
-            <div style={{ display: "flex", gap: "16px", alignItems: "center", flexWrap: "wrap" }}>
-              <div style={{
-                display: "flex",
-                gap: "8px",
-                alignItems: "center",
-                color: "white",
-                fontSize: "14px",
-                fontWeight: 600
-              }}>
-                <span style={{ fontSize: "20px" }}>✓</span> Instant Results
-              </div>
-              <div style={{
-                display: "flex",
-                gap: "8px",
-                alignItems: "center",
-                color: "white",
-                fontSize: "14px",
-                fontWeight: 600
-              }}>
-                <span style={{ fontSize: "20px" }}>✓</span> 95% Accuracy
-              </div>
-              <div style={{
-                display: "flex",
-                gap: "8px",
-                alignItems: "center",
-                color: "white",
-                fontSize: "14px",
-                fontWeight: 600
-              }}>
-                <span style={{ fontSize: "20px" }}>✓</span> Smart Advice
-              </div>
-            </div>
-          </div>
+          {/* BEFORE UPLOAD: Header and Image Side-by-Side */}
+          {!image && (
+            <Grid container spacing={4} alignItems="center">
+              {/* Header Section - LEFT */}
+              <Grid item xs={12} md={6}>
+                <Typography variant="h2" style={{
+                  color: "white",
+                  fontWeight: 900,
+                  marginBottom: "16px",
+                  fontSize: { xs: "2rem", md: "3.5rem" }
+                }}>
+                  Protect Your Plants with AI
+                </Typography>
+                <Typography variant="h6" style={{
+                  color: "rgba(255,255,255,0.95)",
+                  marginBottom: "20px",
+                  fontSize: "1.1rem",
+                  lineHeight: 1.7,
+                  maxWidth: "600px"
+                }}>
+                  Instantly detect leaf diseases using advanced AI technology. Get expert recommendations to keep your plants healthy and thriving.
+                </Typography>
+                <div style={{ display: "flex", gap: "16px", alignItems: "center", flexWrap: "wrap" }}>
+                  <div style={{
+                    display: "flex",
+                    gap: "8px",
+                    alignItems: "center",
+                    color: "white",
+                    fontSize: "14px",
+                    fontWeight: 600
+                  }}>
+                    <span style={{ fontSize: "20px" }}>✓</span> Instant Results
+                  </div>
+                  <div style={{
+                    display: "flex",
+                    gap: "8px",
+                    alignItems: "center",
+                    color: "white",
+                    fontSize: "14px",
+                    fontWeight: 600
+                  }}>
+                    <span style={{ fontSize: "20px" }}>✓</span> 95% Accuracy
+                  </div>
+                  <div style={{
+                    display: "flex",
+                    gap: "8px",
+                    alignItems: "center",
+                    color: "white",
+                    fontSize: "14px",
+                    fontWeight: 600
+                  }}>
+                    <span style={{ fontSize: "20px" }}>✓</span> Smart Advice
+                  </div>
+                </div>
+              </Grid>
 
-          {/* Content Section - Image LEFT, Results RIGHT (Horizontal) */}
-          <Grid container spacing={4} alignItems="flex-start">
-            {/* LEFT: Image */}
-            <Grid item xs={12} md={6}>
+              {/* Image Upload Card - RIGHT */}
+              <Grid item xs={12} md={6}>
+                <Card className={classes.imageCard}>
+                  <div className={classes.imageCardEmpty}>
+                    <CardContent className={classes.content}>
+                      <DropzoneArea
+                        acceptedFiles={['image/*']}
+                        dropzoneText={"📸 Upload a leaf image for AI-powered disease detection"}
+                        onChange={onSelectFile}
+                        maxFileSize={50000000}
+                        filesLimit={1}
+                        showFileNamesInPreview={false}
+                        showPreviewsInDropzone={false}
+                      />
+                    </CardContent>
+                  </div>
+                </Card>
+              </Grid>
+            </Grid>
+          )}
+
+          {/* AFTER UPLOAD: Image + Results Layout */}
+          {image && (
+            <Grid container spacing={4} alignItems="flex-start">
+              {/* LEFT: Image */}
+              <Grid item xs={12} md={6}>
               {/* Upload Box */}
               <Card 
                 className={classes.imageCard}
@@ -499,6 +524,19 @@ export const ImageUpload = () => {
 
             {/* RIGHT: Results and Confidence */}
             <Grid item xs={12} md={6} style={{ position: "relative", zIndex: 10 }}>
+              {/* Result Title */}
+              {data && (
+                <Typography variant="h5" style={{
+                  textAlign: "center",
+                  fontWeight: 900,
+                  marginBottom: "24px",
+                  color: "#1a1a1a",
+                  fontSize: "1.5rem"
+                }}>
+                  📋 Uploaded Image Analysis Result
+                </Typography>
+              )}
+
               {/* Confidence Display */}
               {data && (
                 <div style={{ 
@@ -615,6 +653,7 @@ export const ImageUpload = () => {
               </div>}
             </Grid>
           </Grid>
+          )}
         </Container>
       </div>
 
