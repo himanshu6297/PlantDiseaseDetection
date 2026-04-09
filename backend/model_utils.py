@@ -11,7 +11,7 @@ def preprocess_image(image_file, img_size=(128, 128)):
     """
     Preprocess image for model prediction
     - Resize to (128, 128)
-    - Normalize pixel values to 0-1 range
+    - Keep raw pixel values (0-255) - model has built-in normalization
     """
     # Read image from uploaded file
     image = Image.open(io.BytesIO(image_file)).convert("RGB")
@@ -19,11 +19,8 @@ def preprocess_image(image_file, img_size=(128, 128)):
     # Resize
     image = image.resize(img_size)
     
-    # Convert to array
+    # Convert to array - DO NOT normalize (model does it internally)
     image_array = np.array(image, dtype=np.float32)
-    
-    # Normalize pixel values from 0-255 to 0-1
-    image_array = image_array / 255.0
     
     # Add batch dimension
     image_array = np.expand_dims(image_array, axis=0)
@@ -33,21 +30,17 @@ def preprocess_image(image_file, img_size=(128, 128)):
 def predict(image_file, model, class_names):
     """
     Make prediction on uploaded image
-    Returns: {
-        "class_name": str,
-        "prediction": str (Healthy/Mild/Severe),
-        "confidence": float (0-1),
-        "severity": str
-    }
     """
     import time
     start_time = time.time()
     
     # Preprocess image
+    logger.info("=" * 80)
     logger.info("Starting image preprocessing...")
     image_array = preprocess_image(image_file)
     preprocess_time = time.time() - start_time
     logger.info(f"Image preprocessing completed in {preprocess_time:.2f}s")
+    logger.info(f"Preprocessed image shape: {image_array.shape}")
     
     # Make prediction
     logger.info("Starting model prediction...")
@@ -60,17 +53,22 @@ def predict(image_file, model, class_names):
     prediction_time = time.time() - prediction_start
     logger.info(f"Model prediction completed in {prediction_time:.2f}s")
     
-    # DEBUG: Log top 5 predictions
-    logger.info(f"\n🔍 PREDICTION DEBUG:")
-    logger.info(f"  Predicted Class Index: {predicted_class_idx}")
-    logger.info(f"  Predicted Class Name: {predicted_class_name}")
-    logger.info(f"  Confidence: {confidence:.4f}")
+    # DETAILED DEBUG OUTPUT
+    logger.info("\n" + "=" * 80)
+    logger.info("🔍 DETAILED PREDICTION DEBUG:")
+    logger.info(f"  Total classes available: {len(class_names)}")
+    logger.info(f"  Model output shape: {predictions[0].shape}")
+    logger.info(f"  Predicted Class INDEX: [{predicted_class_idx}]")
+    logger.info(f"  Predicted Class NAME: {predicted_class_name}")
+    logger.info(f"  Top Confidence: {confidence:.6f} ({confidence*100:.2f}%)")
     
-    top_5_indices = np.argsort(predictions[0])[::-1][:5]
-    logger.info(f"  Top 5 Predictions:")
-    for rank, idx in enumerate(top_5_indices, 1):
-        logger.info(f"    {rank}. [{idx:2d}] {class_names[idx]}: {predictions[0][idx]:.4f}")
-    logger.info(f"🔍")
+    logger.info(f"\n  TOP 10 PREDICTIONS:")
+    top_10_indices = np.argsort(predictions[0])[::-1][:10]
+    for rank, idx in enumerate(top_10_indices, 1):
+        score = predictions[0][idx]
+        logger.info(f"    {rank:2d}. [{idx:2d}] {class_names[idx]:<60s} : {score:.6f}")
+    
+    logger.info("=" * 80 + "\n")
     
     # Get severity classification
     severity_info = get_severity_prediction(predicted_class_name)

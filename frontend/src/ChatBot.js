@@ -171,8 +171,8 @@ const ChatBot = ({ prediction }) => {
   const PREDICT_URL = process.env.REACT_APP_API_URL || "http://localhost:8000/predict";
   const API_BASE_URL = PREDICT_URL.replace("/predict", "") || "http://localhost:8000";
   
-  // Backend chat endpoint is on different port (8001) while API is on 8000
-  const CHAT_BASE_URL = "http://localhost:8000";
+  // Backend both API and chat endpoints run on same port (8000)
+  const CHAT_BASE_URL = API_BASE_URL;
 
   // Initialize session and fetch initial message
   useEffect(() => {
