@@ -437,9 +437,10 @@ export const ImageUpload = () => {
             </div>
           </div>
 
-          {/* Content Section - Image and Results STACKED VERTICALLY */}
-          <Grid container spacing={4}>
-            <Grid item xs={12}>
+          {/* Content Section - Image LEFT, Results RIGHT (Horizontal) */}
+          <Grid container spacing={4} alignItems="flex-start">
+            {/* LEFT: Image */}
+            <Grid item xs={12} md={6}>
               {/* Upload Box */}
               <Card className={classes.imageCard}>
                 {image && (
@@ -469,10 +470,13 @@ export const ImageUpload = () => {
                   </div>
                 )}
               </Card>
+            </Grid>
 
+            {/* RIGHT: Results and Confidence */}
+            <Grid item xs={12} md={6}>
               {/* Confidence Display */}
               {data && (
-                <CardContent className={classes.detail} style={{ paddingBottom: 0, marginTop: "20px" }}>
+                <div style={{ marginBottom: "20px" }}>
                   <div style={{ 
                     background: "linear-gradient(135deg, #2196F3 0%, #1976D2 100%)",
                     padding: "20px 30px",
@@ -489,12 +493,12 @@ export const ImageUpload = () => {
                       {displayConfidence}%
                     </Typography>
                   </div>
-                </CardContent>
+                </div>
               )}
 
               {/* Decision Support */}
               {data && (
-                <Paper className={classes.decisionCard} elevation={0} style={{ marginTop: "20px" }}>
+                <Paper className={classes.decisionCard} elevation={0} style={{ marginTop: "0px" }}>
                   <Typography style={{ fontWeight: 900, textAlign: "center", fontSize: 20, marginBottom: 16, color: "#1a1a1a" }}>
                     ✨ Analysis Result
                   </Typography>
@@ -571,12 +575,12 @@ export const ImageUpload = () => {
                 </Paper>
               )}
 
-              {isLoading && <CardContent className={classes.detail} style={{ paddingTop: 40, paddingBottom: 40 }}>
+              {isLoading && <div className={classes.detail} style={{ paddingTop: 40, paddingBottom: 40 }}>
                 <CircularProgress size={60} color="secondary" className={classes.loader} />
                 <Typography style={{ marginTop: 24, fontSize: 16, fontWeight: 700, color: "#be6a77" }}>
                   🔄 Analyzing...
                 </Typography>
-              </CardContent>}
+              </div>}
 
               {data && (
                 <ColorButton variant="contained" className={classes.clearButton} color="primary" component="span" size="large" onClick={clearData} startIcon={<Clear fontSize="large" />} style={{ width: "100%", marginTop: "24px" }}>
