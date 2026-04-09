@@ -1,5 +1,7 @@
 import logging
 import os
+import random
+import numpy as np
 
 from dotenv import load_dotenv
 import tensorflow as tf
@@ -21,6 +23,13 @@ from chatbot_service import (
 
 # Load environment variables
 load_dotenv()
+
+# Set random seeds for reproducibility BEFORE any TensorFlow operations
+random.seed(42)
+np.random.seed(42)
+tf.random.set_seed(42)
+os.environ['TF_DETERMINISTIC_OPS'] = '1'
+os.environ['TF_CUDNN_DETERMINISTIC'] = '1'
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -62,9 +71,19 @@ async def startup_event():
             raise FileNotFoundError(f"Model file not found at {MODEL_PATH}")
         
         model = tf.keras.models.load_model(MODEL_PATH)
+        # Disable augmentation layers for inference
+        seq_layer = model.layers[1]  # The Sequential preprocessing layer
+        seq_layer.trainable = False
+        for layer in seq_layer.layers:
+            layer.trainable = False
+        
+        # Compile model with deterministic settings
+        model.compile(optimizer='adam', loss='softmax', metrics=['accuracy'])
         
         # Initialize chatbot service
         initialize_chatbot_service()
+        
+        logger.info("✓ Model loaded and configured for inference (augmentations disabled)")
         
         # Define class names (38 Plant Village classes - alphabetically sorted as per TensorFlow training)
         class_names = [

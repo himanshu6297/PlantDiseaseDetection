@@ -42,8 +42,8 @@ def predict(image_file, model, class_names):
     logger.info(f"Image preprocessing completed in {preprocess_time:.2f}s")
     logger.info(f"Preprocessed image shape: {image_array.shape}")
     
-    # Make prediction
-    logger.info("Starting model prediction...")
+    # Make prediction with training=False to disable augmentation layers
+    logger.info("Starting model prediction (inference mode - augmentations disabled)...")
     prediction_start = time.time()
     predictions = model.predict(image_array, verbose=0)
     confidence = float(np.max(predictions[0]))
@@ -62,6 +62,19 @@ def predict(image_file, model, class_names):
     logger.info(f"  Predicted Class NAME: {predicted_class_name}")
     logger.info(f"  Top Confidence: {confidence:.6f} ({confidence*100:.2f}%)")
     
+    # Check for confusion between similar corn diseases
+    if "Corn_(maize)" in predicted_class_name:
+        idx_7 = [i for i, name in enumerate(class_names) if "Cercospora" in name][0] if any("Cercospora" in name for name in class_names) else None
+        idx_9 = [i for i, name in enumerate(class_names) if "Northern_Leaf_Blight" in name][0] if any("Northern_Leaf_Blight" in name for name in class_names) else None
+        if idx_7 is not None and idx_9 is not None:
+            logger.info(f"\n  ⚠️  CORN DISEASE SIMILARITY CHECK:")
+            logger.info(f"    Index {idx_7} (Cercospora):       {predictions[0][idx_7]:.6f}")
+            logger.info(f"    Index {idx_9} (Northern Blight): {predictions[0][idx_9]:.6f}")
+            diff = abs(predictions[0][idx_7] - predictions[0][idx_9])
+            logger.info(f"    Confidence difference: {diff:.6f}")
+            if diff < 0.05:
+                logger.warning(f"    ⚠️  WARNING: Confidence scores are very close! Model uncertainty is high.")
+    
     logger.info(f"\n  TOP 10 PREDICTIONS:")
     top_10_indices = np.argsort(predictions[0])[::-1][:10]
     for rank, idx in enumerate(top_10_indices, 1):
@@ -78,12 +91,12 @@ def predict(image_file, model, class_names):
     
     return {
         "class_name": predicted_class_name,
-        "class_index": int(predicted_class_idx),  # ADDED: Show which class was predicted
+        "class_index": int(predicted_class_idx),
         "prediction": severity_info["prediction"],
         "confidence": confidence,
         "severity": severity_info.get("severity", "unknown"),
         "all_predictions": {
             class_names[i]: float(predictions[0][i]) 
-            for i in np.argsort(predictions[0])[::-1][:5]  # Top 5
+            for i in np.argsort(predictions[0])[::-1][:5]
         }
     }
