@@ -64,8 +64,8 @@ const useStyles = makeStyles((theme) => ({
     backdropFilter: "blur(10px)",
   },
   media: {
-    width: 450,
-    height: 450,
+    width: "100%",
+    height: "100%",
     borderRadius: "16px",
     objectFit: "cover",
   },
@@ -93,8 +93,8 @@ const useStyles = makeStyles((theme) => ({
   },
   imageCard: {
     margin: "auto",
-    width: 450,
-    height: 450,
+    width: "100%",
+    height: 500,
     backgroundColor: 'transparent',
     boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15)',
     borderRadius: '20px',
@@ -104,8 +104,8 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
   },
   imageCardEmpty: {
-    width: 450,
-    height: 450,
+    width: "100%",
+    height: 500,
     backgroundImage: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url(${bgImage})`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
@@ -118,8 +118,8 @@ const useStyles = makeStyles((theme) => ({
   },
   noImage: {
     margin: "auto",
-    width: 400,
-    height: "400 !important",
+    width: "100%",
+    height: "100%",
   },
   input: {
     display: 'none',
@@ -442,14 +442,18 @@ export const ImageUpload = () => {
             {/* LEFT: Image */}
             <Grid item xs={12} md={6}>
               {/* Upload Box */}
-              <Card className={classes.imageCard}>
+              <Card 
+                className={classes.imageCard}
+                onClick={() => image && clearData()}
+                style={{ cursor: image ? 'pointer' : 'default' }}
+              >
                 {image && (
                   <CardActionArea style={{ width: '100%', height: '100%' }}>
                     <CardMedia
                       className={classes.media}
                       image={preview}
                       component="image"
-                      title="Uploaded Leaf"
+                      title="Uploaded Leaf - Click to upload another"
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
                   </CardActionArea>
@@ -470,35 +474,63 @@ export const ImageUpload = () => {
                   </div>
                 )}
               </Card>
+
+              {/* Scan Button - Below Image */}
+              {data && (
+                <ColorButton 
+                  variant="contained" 
+                  className={classes.clearButton} 
+                  color="primary" 
+                  component="span" 
+                  size="large" 
+                  onClick={clearData} 
+                  startIcon={<Clear fontSize="large" />} 
+                  style={{ 
+                    width: "100%", 
+                    marginTop: "20px",
+                    boxSizing: "border-box",
+                    position: "relative",
+                    zIndex: 11
+                  }}>
+                  Scan Another Leaf
+                </ColorButton>
+              )}
             </Grid>
 
             {/* RIGHT: Results and Confidence */}
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={6} style={{ position: "relative", zIndex: 10 }}>
               {/* Confidence Display */}
               {data && (
-                <div style={{ marginBottom: "20px" }}>
-                  <div style={{ 
-                    background: "linear-gradient(135deg, #2196F3 0%, #1976D2 100%)",
-                    padding: "20px 30px",
-                    borderRadius: "16px",
-                    color: "white",
-                    textAlign: "center",
-                    width: "100%",
-                    marginBottom: 0,
-                  }}>
-                    <Typography style={{ fontSize: 12, fontWeight: 700, opacity: 0.9, letterSpacing: "1px", textTransform: "uppercase" }}>
-                      Model Confidence
-                    </Typography>
-                    <Typography style={{ fontSize: 42, fontWeight: 900, marginTop: 8 }}>
-                      {displayConfidence}%
-                    </Typography>
-                  </div>
+                <div style={{ 
+                  marginBottom: "20px",
+                  background: "linear-gradient(135deg, #2196F3 0%, #1976D2 100%)",
+                  padding: "20px 30px",
+                  borderRadius: "16px",
+                  color: "white",
+                  textAlign: "center",
+                  width: "100%",
+                  boxSizing: "border-box",
+                  position: "relative",
+                  zIndex: 11
+                }}>
+                  <Typography style={{ fontSize: 12, fontWeight: 700, opacity: 0.9, letterSpacing: "1px", textTransform: "uppercase" }}>
+                    Model Confidence
+                  </Typography>
+                  <Typography style={{ fontSize: 42, fontWeight: 900, marginTop: 8 }}>
+                    {displayConfidence}%
+                  </Typography>
                 </div>
               )}
 
               {/* Decision Support */}
               {data && (
-                <Paper className={classes.decisionCard} elevation={0} style={{ marginTop: "0px" }}>
+                <Paper className={classes.decisionCard} elevation={0} style={{ 
+                  marginTop: "0px",
+                  width: "100%",
+                  boxSizing: "border-box",
+                  position: "relative",
+                  zIndex: 11
+                }}>
                   <Typography style={{ fontWeight: 900, textAlign: "center", fontSize: 20, marginBottom: 16, color: "#1a1a1a" }}>
                     ✨ Analysis Result
                   </Typography>
@@ -581,12 +613,6 @@ export const ImageUpload = () => {
                   🔄 Analyzing...
                 </Typography>
               </div>}
-
-              {data && (
-                <ColorButton variant="contained" className={classes.clearButton} color="primary" component="span" size="large" onClick={clearData} startIcon={<Clear fontSize="large" />} style={{ width: "100%", marginTop: "24px" }}>
-                  Scan Another Leaf
-                </ColorButton>
-              )}
             </Grid>
           </Grid>
         </Container>
@@ -600,7 +626,7 @@ export const ImageUpload = () => {
           right: '20px',
           width: '480px',
           maxHeight: '650px',
-          zIndex: 999,
+          zIndex: 50,
           boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
           borderRadius: '16px',
           overflow: 'auto',
