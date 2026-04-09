@@ -505,6 +505,12 @@ export const ImageUpload = () => {
                     <Typography style={{ fontSize: 18, fontWeight: 800, color: "#1a1a1a" }}>
                       {data?.class_name?.replace(/___/g, " → ")}
                     </Typography>
+                    {/* DEBUG: Show class index */}
+                    {data?.class_index !== undefined && (
+                      <Typography style={{ fontSize: 10, color: "#999", fontWeight: 500, marginTop: 6 }}>
+                        (Class Index: {data.class_index})
+                      </Typography>
+                    )}
                   </div>
 
                   {/* Status & Confidence */}

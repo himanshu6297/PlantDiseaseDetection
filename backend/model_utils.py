@@ -60,6 +60,18 @@ def predict(image_file, model, class_names):
     prediction_time = time.time() - prediction_start
     logger.info(f"Model prediction completed in {prediction_time:.2f}s")
     
+    # DEBUG: Log top 5 predictions
+    logger.info(f"\n🔍 PREDICTION DEBUG:")
+    logger.info(f"  Predicted Class Index: {predicted_class_idx}")
+    logger.info(f"  Predicted Class Name: {predicted_class_name}")
+    logger.info(f"  Confidence: {confidence:.4f}")
+    
+    top_5_indices = np.argsort(predictions[0])[::-1][:5]
+    logger.info(f"  Top 5 Predictions:")
+    for rank, idx in enumerate(top_5_indices, 1):
+        logger.info(f"    {rank}. [{idx:2d}] {class_names[idx]}: {predictions[0][idx]:.4f}")
+    logger.info(f"🔍")
+    
     # Get severity classification
     severity_info = get_severity_prediction(predicted_class_name)
     
@@ -68,6 +80,7 @@ def predict(image_file, model, class_names):
     
     return {
         "class_name": predicted_class_name,
+        "class_index": int(predicted_class_idx),  # ADDED: Show which class was predicted
         "prediction": severity_info["prediction"],
         "confidence": confidence,
         "severity": severity_info.get("severity", "unknown"),
