@@ -463,7 +463,20 @@ export const ImageUpload = () => {
 
           {/* AFTER UPLOAD: Image + Results Layout */}
           {image && (
-            <Grid container spacing={4} alignItems="flex-start">
+            <>
+              {/* Result Title - Above Image and Confidence */}
+              <Typography variant="h4" style={{
+                textAlign: "center",
+                fontWeight: 900,
+                marginBottom: "32px",
+                color: "white",
+                fontSize: "1.8rem",
+                textShadow: "0 2px 8px rgba(0,0,0,0.2)"
+              }}>
+                Uploaded Image Result
+              </Typography>
+
+              <Grid container spacing={4} alignItems="flex-start">
               {/* LEFT: Image */}
               <Grid item xs={12} md={6}>
               {/* Upload Box */}
@@ -524,19 +537,6 @@ export const ImageUpload = () => {
 
             {/* RIGHT: Results and Confidence */}
             <Grid item xs={12} md={6} style={{ position: "relative", zIndex: 10 }}>
-              {/* Result Title */}
-              {data && (
-                <Typography variant="h5" style={{
-                  textAlign: "center",
-                  fontWeight: 900,
-                  marginBottom: "24px",
-                  color: "#1a1a1a",
-                  fontSize: "1.5rem"
-                }}>
-                  📋 Uploaded Image Analysis Result
-                </Typography>
-              )}
-
               {/* Confidence Display */}
               {data && (
                 <div style={{ 
@@ -653,6 +653,7 @@ export const ImageUpload = () => {
               </div>}
             </Grid>
           </Grid>
+            </>
           )}
         </Container>
       </div>
