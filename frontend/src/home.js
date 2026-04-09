@@ -8,12 +8,15 @@ import Container from "@material-ui/core/Container";
 import React from "react";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import { Paper, CardActionArea, CardMedia, Grid, Button, CircularProgress } from "@material-ui/core";
+import { Paper, CardActionArea, CardMedia, Grid, Button, CircularProgress, IconButton } from "@material-ui/core";
 import cblogo from "./cblogo.png";
 import bgImage from "./bg.png";
 import { DropzoneArea } from 'material-ui-dropzone';
 import { common } from '@material-ui/core/colors';
 import Clear from '@material-ui/icons/Clear';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import Close from '@material-ui/icons/Close';
 import ChatBot from "./ChatBot";
 
 
@@ -229,6 +232,46 @@ const useStyles = makeStyles((theme) => ({
       transform: 'translateY(-30px)',
     },
   },
+  chatbotWidget: {
+    position: 'fixed',
+    bottom: '40px',
+    right: '20px',
+    width: '480px',
+    maxHeight: '650px',
+    zIndex: 50,
+    boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
+    borderRadius: '16px',
+    overflow: 'hidden',
+    background: 'white',
+    border: '1px solid rgba(0,0,0,0.05)',
+    animation: '$slideInUp 0.4s ease-out',
+  },
+  chatbotHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '16px 20px',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    borderBottom: '1px solid rgba(0,0,0,0.05)',
+  },
+  chatbotMinimized: {
+    position: 'fixed',
+    bottom: '40px',
+    right: '20px',
+    width: '300px',
+    height: 'auto',
+    zIndex: 50,
+    boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+    borderRadius: '16px 16px 0 0',
+    overflow: 'hidden',
+    background: 'white',
+    border: '1px solid rgba(0,0,0,0.05)',
+  },
+  chatbotContent: {
+    overflow: 'auto',
+    maxHeight: '70vh',
+    padding: '16px',
+  },
 }));
 const featureData = [
   {
@@ -283,6 +326,7 @@ export const ImageUpload = () => {
   const [data, setData] = useState();
   const [image, setImage] = useState(false);
   const [isLoading, setIsloading] = useState(false);
+  const [chatbotMinimized, setChatbotMinimized] = useState(false);
 
   const sendFile = useCallback(async () => {
     if (image) {
@@ -658,49 +702,128 @@ export const ImageUpload = () => {
         </Container>
       </div>
 
-      {/* ChatBot Component - Fixed floating widget in bottom right */}
+      {/* CHATBOT WIDGET - Always visible when image is uploaded with Minimize/Maximize options */}
       {data && (
         <div style={{
           position: 'fixed',
           bottom: '40px',
           right: '20px',
-          width: '480px',
-          maxHeight: '650px',
+          width: chatbotMinimized ? '280px' : '480px',
+          maxHeight: chatbotMinimized ? 'auto' : '650px',
           zIndex: 50,
           boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
           borderRadius: '16px',
-          overflow: 'auto',
+          overflow: 'hidden',
           background: 'white',
           border: '1px solid rgba(0,0,0,0.05)',
-          opacity: 1,
           animation: 'slideInUp 0.4s ease-out',
-          scrollBehavior: 'smooth',
-          '&::-webkit-scrollbar': {
-            width: '8px',
-          },
-          '&::-webkit-scrollbar-track': {
-            background: 'transparent',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            borderRadius: '4px',
-          },
-          '&::-webkit-scrollbar-thumb:hover': {
-            background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
-          },
+          transition: 'all 0.3s ease',
         }}>
-          <ChatBot 
-            prediction={{
-              plant_type: data.class_name?.split("___")[0] || "Unknown",
-              class_name: data.class_name?.replace(/___/g, " → ") || "Unknown",
-              confidence: data.confidence || 0,
-              prediction: data.prediction || "Unknown",
-              top_predictions: Object.entries(data.all_predictions || {}).map(([name, conf]) => ({
-                name: name.replace(/___/g, " → "),
-                confidence: conf
-              })).slice(0, 5)
-            }}
-          />
+          {/* Header with Minimize/Maximize and Close Buttons */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '14px 16px',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            borderBottom: '2px solid rgba(255,255,255,0.3)',
+            cursor: 'default',
+          }}>
+            <Typography variant="subtitle2" style={{
+              color: 'white',
+              fontWeight: 800,
+              fontSize: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              margin: 0,
+            }}>
+              💬 AI Assistant
+            </Typography>
+            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+              {/* MINIMIZE/MAXIMIZE BUTTON - SMALL WITH ICON */}
+              <button
+                onClick={() => setChatbotMinimized(!chatbotMinimized)}
+                style={{
+                  background: 'rgba(255,255,255,0.25)',
+                  border: '1px solid rgba(255,255,255,0.5)',
+                  color: 'white',
+                  padding: '6px 8px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.3s ease',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.4)';
+                  e.currentTarget.style.transform = 'scale(1.12)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.25)';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+                title={chatbotMinimized ? 'Expand Chat' : 'Collapse Chat'}
+              >
+                {chatbotMinimized ? '▲' : '▼'}
+              </button>
+              
+              {/* CLOSE BUTTON - SMALL WITH ICON */}
+              <button
+                onClick={() => setData(null)}
+                style={{
+                  background: 'rgba(255,255,255,0.25)',
+                  border: '1px solid rgba(255,255,255,0.5)',
+                  color: 'white',
+                  padding: '6px 8px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  transition: 'all 0.3s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.4)';
+                  e.currentTarget.style.transform = 'scale(1.12)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.25)';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+                title="Close Chat"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+
+          {/* Chatbot Content - Hidden when minimized */}
+          {!chatbotMinimized && (
+            <div style={{
+              overflow: 'auto',
+              maxHeight: 'calc(650px - 52px)',
+              scrollBehavior: 'smooth',
+            }}>
+              <ChatBot 
+                prediction={{
+                  plant_type: data.class_name?.split("___")[0] || "Unknown",
+                  class_name: data.class_name?.replace(/___/g, " → ") || "Unknown",
+                  confidence: data.confidence || 0,
+                  prediction: data.prediction || "Unknown",
+                  top_predictions: Object.entries(data.all_predictions || {}).map(([name, conf]) => ({
+                    name: name.replace(/___/g, " → "),
+                    confidence: conf
+                  })).slice(0, 5)
+                }}
+              />
+            </div>
+          )}
         </div>
       )}
 
