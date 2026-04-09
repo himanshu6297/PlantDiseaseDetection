@@ -376,68 +376,70 @@ export const ImageUpload = () => {
         backgroundPosition: 'center',
         backgroundSize: 'cover',
         backgroundAttachment: 'fixed',
-        minHeight: "650px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        minHeight: "auto",
+        display: "block",
         position: "relative",
         overflow: "hidden",
-        paddingTop: "60px",
-        paddingBottom: "60px"
+        paddingTop: "40px",
+        paddingBottom: "40px"
       }}>
         <Container maxWidth="lg" style={{ position: "relative", zIndex: 1 }}>
-          <Grid container spacing={4} alignItems="center">
-            <Grid item xs={12} md={6}>
-              <Typography variant="h2" style={{
+          {/* Header Section */}
+          <div style={{ marginBottom: "40px" }}>
+            <Typography variant="h2" style={{
+              color: "white",
+              fontWeight: 900,
+              marginBottom: "16px",
+              fontSize: { xs: "2rem", md: "3.5rem" }
+            }}>
+              Protect Your Plants with AI
+            </Typography>
+            <Typography variant="h6" style={{
+              color: "rgba(255,255,255,0.95)",
+              marginBottom: "20px",
+              fontSize: "1.1rem",
+              lineHeight: 1.7,
+              maxWidth: "600px"
+            }}>
+              Instantly detect leaf diseases using advanced AI technology. Get expert recommendations to keep your plants healthy and thriving.
+            </Typography>
+            <div style={{ display: "flex", gap: "16px", alignItems: "center", flexWrap: "wrap" }}>
+              <div style={{
+                display: "flex",
+                gap: "8px",
+                alignItems: "center",
                 color: "white",
-                fontWeight: 900,
-                marginBottom: "24px",
-                fontSize: { xs: "2rem", md: "3.5rem" }
+                fontSize: "14px",
+                fontWeight: 600
               }}>
-                Protect Your Plants with AI
-              </Typography>
-              <Typography variant="h6" style={{
-                color: "rgba(255,255,255,0.95)",
-                marginBottom: "32px",
-                fontSize: "1.1rem",
-                lineHeight: 1.7
-              }}>
-                Instantly detect leaf diseases using advanced AI technology. Get expert recommendations to keep your plants healthy and thriving.
-              </Typography>
-              <div style={{ display: "flex", gap: "16px", alignItems: "center", flexWrap: "wrap" }}>
-                <div style={{
-                  display: "flex",
-                  gap: "8px",
-                  alignItems: "center",
-                  color: "white",
-                  fontSize: "14px",
-                  fontWeight: 600
-                }}>
-                  <span style={{ fontSize: "20px" }}>✓</span> Instant Results
-                </div>
-                <div style={{
-                  display: "flex",
-                  gap: "8px",
-                  alignItems: "center",
-                  color: "white",
-                  fontSize: "14px",
-                  fontWeight: 600
-                }}>
-                  <span style={{ fontSize: "20px" }}>✓</span> 95% Accuracy
-                </div>
-                <div style={{
-                  display: "flex",
-                  gap: "8px",
-                  alignItems: "center",
-                  color: "white",
-                  fontSize: "14px",
-                  fontWeight: 600
-                }}>
-                  <span style={{ fontSize: "20px" }}>✓</span> Smart Advice
-                </div>
+                <span style={{ fontSize: "20px" }}>✓</span> Instant Results
               </div>
-            </Grid>
-            <Grid item xs={12} md={6}>
+              <div style={{
+                display: "flex",
+                gap: "8px",
+                alignItems: "center",
+                color: "white",
+                fontSize: "14px",
+                fontWeight: 600
+              }}>
+                <span style={{ fontSize: "20px" }}>✓</span> 95% Accuracy
+              </div>
+              <div style={{
+                display: "flex",
+                gap: "8px",
+                alignItems: "center",
+                color: "white",
+                fontSize: "14px",
+                fontWeight: 600
+              }}>
+                <span style={{ fontSize: "20px" }}>✓</span> Smart Advice
+              </div>
+            </div>
+          </div>
+
+          {/* Content Section - Image and Results STACKED VERTICALLY */}
+          <Grid container spacing={4}>
+            <Grid item xs={12}>
               {/* Upload Box */}
               <Card className={classes.imageCard}>
                 {image && (
@@ -470,7 +472,7 @@ export const ImageUpload = () => {
 
               {/* Confidence Display */}
               {data && (
-                <CardContent className={classes.detail} style={{ paddingBottom: 0 }}>
+                <CardContent className={classes.detail} style={{ paddingBottom: 0, marginTop: "20px" }}>
                   <div style={{ 
                     background: "linear-gradient(135deg, #2196F3 0%, #1976D2 100%)",
                     padding: "20px 30px",
@@ -492,7 +494,7 @@ export const ImageUpload = () => {
 
               {/* Decision Support */}
               {data && (
-                <Paper className={classes.decisionCard} elevation={0}>
+                <Paper className={classes.decisionCard} elevation={0} style={{ marginTop: "20px" }}>
                   <Typography style={{ fontWeight: 900, textAlign: "center", fontSize: 20, marginBottom: 16, color: "#1a1a1a" }}>
                     ✨ Analysis Result
                   </Typography>
@@ -577,11 +579,9 @@ export const ImageUpload = () => {
               </CardContent>}
 
               {data && (
-                <Grid item className={classes.buttonGrid} style={{ marginTop: "16px" }}>
-                  <ColorButton variant="contained" className={classes.clearButton} color="primary" component="span" size="large" onClick={clearData} startIcon={<Clear fontSize="large" />}>
-                    Scan Another Leaf
-                  </ColorButton>
-                </Grid>
+                <ColorButton variant="contained" className={classes.clearButton} color="primary" component="span" size="large" onClick={clearData} startIcon={<Clear fontSize="large" />} style={{ width: "100%", marginTop: "24px" }}>
+                  Scan Another Leaf
+                </ColorButton>
               )}
             </Grid>
           </Grid>
