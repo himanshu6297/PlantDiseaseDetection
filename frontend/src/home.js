@@ -232,6 +232,75 @@ const useStyles = makeStyles((theme) => ({
       transform: 'translateY(-30px)',
     },
   },
+  '@keyframes pulse': {
+    '0%': {
+      boxShadow: '0 4px 20px rgba(31, 47, 82, 0.4)',
+    },
+    '50%': {
+      boxShadow: '0 4px 30px rgba(31, 47, 82, 0.7)',
+    },
+    '100%': {
+      boxShadow: '0 4px 20px rgba(31, 47, 82, 0.4)',
+    },
+  },
+  '@keyframes bubble': {
+    '0%': {
+      transform: 'scale(1)',
+      opacity: 1,
+      filter: 'drop-shadow(0 0 0px rgba(31, 47, 82, 0.3))',
+    },
+    '25%': {
+      transform: 'scale(1.08)',
+      opacity: 0.95,
+      filter: 'drop-shadow(0 0 8px rgba(31, 47, 82, 0.5))',
+    },
+    '50%': {
+      transform: 'scale(1.12)',
+      opacity: 0.9,
+      filter: 'drop-shadow(0 0 15px rgba(31, 47, 82, 0.7))',
+    },
+    '75%': {
+      transform: 'scale(1.08)',
+      opacity: 0.95,
+      filter: 'drop-shadow(0 0 8px rgba(31, 47, 82, 0.5))',
+    },
+    '100%': {
+      transform: 'scale(1)',
+      opacity: 1,
+      filter: 'drop-shadow(0 0 0px rgba(31, 47, 82, 0.3))',
+    },
+  },
+  '@keyframes bubbleRing': {
+    '0%': {
+      boxShadow: '0 0 0 0 rgba(31, 47, 82, 0.9)',
+    },
+    '25%': {
+      boxShadow: '0 0 0 6px rgba(31, 47, 82, 0.6)',
+    },
+    '50%': {
+      boxShadow: '0 0 0 15px rgba(31, 47, 82, 0.2)',
+    },
+    '75%': {
+      boxShadow: '0 0 0 23px rgba(31, 47, 82, 0)',
+    },
+    '100%': {
+      boxShadow: '0 0 0 0 rgba(31, 47, 82, 0)',
+    },
+  },
+  '@keyframes statusPulse': {
+    '0%': {
+      transform: 'scale(1)',
+      boxShadow: '0 2px 8px rgba(76, 175, 80, 0.4)',
+    },
+    '50%': {
+      transform: 'scale(1.3)',
+      boxShadow: '0 2px 15px rgba(76, 175, 80, 0.8)',
+    },
+    '100%': {
+      transform: 'scale(1)',
+      boxShadow: '0 2px 8px rgba(76, 175, 80, 0.4)',
+    },
+  },
   chatbotWidget: {
     position: 'fixed',
     bottom: '40px',
@@ -326,7 +395,7 @@ export const ImageUpload = () => {
   const [data, setData] = useState();
   const [image, setImage] = useState(false);
   const [isLoading, setIsloading] = useState(false);
-  const [chatbotMinimized, setChatbotMinimized] = useState(false);
+  const [chatbotMinimized, setChatbotMinimized] = useState(true);
 
   const sendFile = useCallback(async () => {
     if (image) {
@@ -341,6 +410,7 @@ export const ImageUpload = () => {
         });
         if (res.status === 200) {
           setData(res.data);
+          setChatbotMinimized(false); // Open chatbot when prediction is received
         }
       } catch (error) {
         console.error("Upload error:", error);
@@ -702,14 +772,88 @@ export const ImageUpload = () => {
         </Container>
       </div>
 
-      {/* CHATBOT WIDGET - Always visible when image is uploaded with Minimize/Maximize options */}
-      {data && (
+      {/* FLOATING CHAT BUBBLE - When minimized, show circle in bottom right with bubble effects */}
+      {data && chatbotMinimized && (
+        <div style={{ position: 'relative' }}>
+          {/* Outer bubble ring effect */}
+          <div
+            style={{
+              position: 'fixed',
+              bottom: '30px',
+              right: '20px',
+              width: '56px',
+              height: '56px',
+              borderRadius: '50%',
+              background: 'transparent',
+              boxShadow: '0 0 0 0 rgba(31, 47, 82, 0.7)',
+              zIndex: 40,
+              animation: 'bubbleRing 1.5s ease-out infinite',
+            }}
+          />
+          
+          {/* Main chat bubble button */}
+          <button
+            onClick={() => setChatbotMinimized(false)}
+            style={{
+              position: 'fixed',
+              bottom: '30px',
+              right: '20px',
+              width: '56px',
+              height: '56px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, rgba(31, 47, 82, 0.92) 0%, rgba(44, 62, 115, 0.92) 100%)',
+              border: '2px solid rgba(255,255,255,0.4)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '28px',
+              boxShadow: '0 8px 25px rgba(31, 47, 82, 0.6), 0 0 15px rgba(31, 47, 82, 0.3)',
+              zIndex: 50,
+              transition: 'all 0.3s ease',
+              animation: 'bubble 2.5s ease-in-out infinite',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.25)';
+              e.currentTarget.style.boxShadow = '0 12px 45px rgba(31, 47, 82, 0.9), 0 0 80px rgba(31, 47, 82, 0.6)';
+              e.currentTarget.style.animation = 'none';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.boxShadow = '0 8px 25px rgba(31, 47, 82, 0.6), 0 0 0 rgba(31, 47, 82, 0.3)';
+              e.currentTarget.style.animation = 'bubble 2.5s ease-in-out infinite';
+            }}
+            title="Open Chat - Online"
+          >
+            💬
+            
+            {/* Green online status dot */}
+            <div
+              style={{
+                position: 'absolute',
+                top: '0px',
+                right: '0px',
+                width: '16px',
+                height: '16px',
+                borderRadius: '50%',
+                background: '#4caf50',
+                border: '3px solid white',
+                boxShadow: '0 2px 8px rgba(76, 175, 80, 0.6)',
+                animation: 'statusPulse 2s ease-in-out infinite',
+              }}
+            />
+          </button>
+        </div>
+      )}
+
+      {/* CHATBOT WIDGET - When expanded (automatically opens when image uploads) */}
+      {data && !chatbotMinimized && (
         <div style={{
           position: 'fixed',
           bottom: '40px',
           right: '20px',
-          width: chatbotMinimized ? '280px' : '480px',
-          maxHeight: chatbotMinimized ? 'auto' : '650px',
+          width: '480px',
+          maxHeight: '650px',
           zIndex: 50,
           boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
           borderRadius: '16px',
@@ -719,14 +863,14 @@ export const ImageUpload = () => {
           animation: 'slideInUp 0.4s ease-out',
           transition: 'all 0.3s ease',
         }}>
-          {/* Header with Minimize/Maximize and Close Buttons */}
+          {/* Header with Minimize and Close Buttons - Dark Blue Color Scheme */}
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             padding: '14px 16px',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            borderBottom: '2px solid rgba(255,255,255,0.3)',
+            background: 'linear-gradient(135deg, rgba(31, 47, 82, 0.92) 0%, rgba(44, 62, 115, 0.92) 100%)',
+            borderBottom: '1px solid rgba(0,0,0,0.05)',
             cursor: 'default',
           }}>
             <Typography variant="subtitle2" style={{
@@ -738,45 +882,43 @@ export const ImageUpload = () => {
               gap: '8px',
               margin: 0,
             }}>
-              💬 AI Assistant
+              🤖 AI Assistant
             </Typography>
-            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-              {/* MINIMIZE/MAXIMIZE BUTTON - SMALL WITH ICON */}
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              {/* MINIMIZE BUTTON - Simple - icon */}
               <button
-                onClick={() => setChatbotMinimized(!chatbotMinimized)}
+                onClick={() => setChatbotMinimized(true)}
                 style={{
-                  background: 'rgba(255,255,255,0.25)',
-                  border: '1px solid rgba(255,255,255,0.5)',
+                  background: 'rgba(255,255,255,0.2)',
+                  border: 'none',
                   color: 'white',
-                  padding: '6px 8px',
+                  padding: '6px 9px',
                   borderRadius: '4px',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   transition: 'all 0.3s ease',
-                  fontSize: '14px',
+                  fontSize: '18px',
                   fontWeight: 'bold',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.4)';
-                  e.currentTarget.style.transform = 'scale(1.12)';
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.3)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.25)';
-                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
                 }}
-                title={chatbotMinimized ? 'Expand Chat' : 'Collapse Chat'}
+                title="Minimize"
               >
-                {chatbotMinimized ? '▲' : '▼'}
+                −
               </button>
               
-              {/* CLOSE BUTTON - SMALL WITH ICON */}
+              {/* CLOSE BUTTON - Simple X icon */}
               <button
                 onClick={() => setData(null)}
                 style={{
-                  background: 'rgba(255,255,255,0.25)',
-                  border: '1px solid rgba(255,255,255,0.5)',
+                  background: 'rgba(255,255,255,0.2)',
+                  border: 'none',
                   color: 'white',
                   padding: '6px 8px',
                   borderRadius: '4px',
@@ -789,41 +931,37 @@ export const ImageUpload = () => {
                   transition: 'all 0.3s ease',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.4)';
-                  e.currentTarget.style.transform = 'scale(1.12)';
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.3)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.25)';
-                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
                 }}
-                title="Close Chat"
+                title="Close"
               >
                 ✕
               </button>
             </div>
           </div>
 
-          {/* Chatbot Content - Hidden when minimized */}
-          {!chatbotMinimized && (
-            <div style={{
-              overflow: 'auto',
-              maxHeight: 'calc(650px - 52px)',
-              scrollBehavior: 'smooth',
-            }}>
-              <ChatBot 
-                prediction={{
-                  plant_type: data.class_name?.split("___")[0] || "Unknown",
-                  class_name: data.class_name?.replace(/___/g, " → ") || "Unknown",
-                  confidence: data.confidence || 0,
-                  prediction: data.prediction || "Unknown",
-                  top_predictions: Object.entries(data.all_predictions || {}).map(([name, conf]) => ({
-                    name: name.replace(/___/g, " → "),
-                    confidence: conf
-                  })).slice(0, 5)
-                }}
-              />
-            </div>
-          )}
+          {/* Chatbot Content */}
+          <div style={{
+            overflow: 'auto',
+            maxHeight: 'calc(650px - 52px)',
+            scrollBehavior: 'smooth',
+          }}>
+            <ChatBot 
+              prediction={{
+                plant_type: data.class_name?.split("___")[0] || "Unknown",
+                class_name: data.class_name?.replace(/___/g, " → ") || "Unknown",
+                confidence: data.confidence || 0,
+                prediction: data.prediction || "Unknown",
+                top_predictions: Object.entries(data.all_predictions || {}).map(([name, conf]) => ({
+                  name: name.replace(/___/g, " → "),
+                  confidence: conf
+                })).slice(0, 5)
+              }}
+            />
+          </div>
         </div>
       )}
 
