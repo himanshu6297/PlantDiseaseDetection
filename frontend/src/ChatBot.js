@@ -28,14 +28,14 @@ const useStyles = makeStyles((theme) => ({
     overflow: "hidden",
   },
   chatHeader: {
-    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    background: "linear-gradient(135deg, rgba(31, 47, 82, 0.92) 0%, rgba(44, 62, 115, 0.92) 100%)",
     color: "white",
     paddingBottom: 16,
   },
   diseaseContextCard: {
     marginBottom: 16,
-    borderLeft: "4px solid #667eea",
-    backgroundColor: "rgba(102, 126, 234, 0.05)",
+    borderLeft: "4px solid rgba(31, 47, 82, 0.92)",
+    backgroundColor: "rgba(31, 47, 82, 0.08)",
   },
   confidenceLow: {
     borderLeft: "4px solid #f44336",
@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
   },
   userMessage: {
     alignSelf: "flex-end",
-    backgroundColor: "#667eea",
+    backgroundColor: "rgba(31, 47, 82, 0.92)",
     color: "white",
     borderBottomRightRadius: 4,
   },
@@ -85,10 +85,10 @@ const useStyles = makeStyles((theme) => ({
     flex: 1,
   },
   sendButton: {
-    backgroundColor: "#667eea",
+    backgroundColor: "rgba(31, 47, 82, 0.92)",
     color: "white",
     "&:hover": {
-      backgroundColor: "#5568d3",
+      backgroundColor: "rgba(20, 32, 55, 0.92)",
     },
   },
   urgencyLow: {
@@ -356,7 +356,7 @@ const ChatBot = ({ prediction }) => {
     return (
       <Card className={classes.chatCard}>
         <CardHeader
-          title="🤖 Plant Disease Advisor"
+          title=" Plant Disease Advisor"
           className={classes.chatHeader}
         />
         <CardContent>
@@ -384,7 +384,7 @@ const ChatBot = ({ prediction }) => {
     <Card className={classes.chatCard}>
       {/* Header */}
       <CardHeader
-        title="🤖 Plant Disease Advisor"
+        title="Plant Disease Advisor"
         subtitle="Ask me about symptoms, management, and prevention"
         className={classes.chatHeader}
       />
