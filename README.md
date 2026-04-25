@@ -114,7 +114,11 @@ AgriGuard is an **end-to-end AI-powered crop disease detection system** that ena
 ## 📸 Screenshots
 
 <p align="center">
-  <img src="docs/Homepage.jpg" width="250"/>
+  <img src="docs/Homepage.jpg" width="800"/>
+</p>
+
+<!-- 🔹 Results (3 Column Grid) -->
+<p align="center">
   <img src="docs/Result-1.jpg" width="250"/>
   <img src="docs/Result-2.jpg" width="250"/>
   <img src="docs/Result-3.jpg" width="250"/>
