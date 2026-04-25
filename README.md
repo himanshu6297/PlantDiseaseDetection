@@ -22,7 +22,7 @@ The system combines:
 * 🎨 React Frontend
 * 💬 LLM-Based Chatbot
 
-👉 Designed to bridge the gap between **AI research and real-world agricultural use**
+ Designed to bridge the gap between **AI research and real-world agricultural use**
 
 ---
 
@@ -33,7 +33,7 @@ The system combines:
 * ⏱️ Manual diagnosis is slow & inconsistent
 * ❌ Most AI models are not deployed
 
-👉 AgriGuard provides a **fully deployable AI solution with real-time guidance**
+ AgriGuard provides a **fully deployable AI solution with real-time guidance**
 
 ---
 
