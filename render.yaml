@@ -2,6 +2,7 @@ services:
   - type: web
     name: plant-disease-backend
     env: python
+    pythonVersion: 3.11.11
     rootDir: backend
     plan: free
     buildCommand: pip install -r requirements.txt
