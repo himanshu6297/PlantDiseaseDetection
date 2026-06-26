@@ -232,7 +232,7 @@ const ChatBot = ({ prediction }) => {
           
           // If chat endpoint fails, show helpful message instead of blank error
           if (axiosErr.code === 'ECONNABORTED' || axiosErr.response?.status === 404) {
-            setError("Chatbot service not available. Backend server may not be running. Please ensure the backend is started on port 8001.");
+            setError("Chatbot service not available. Backend server may not be running. Please ensure the backend is deployed and reachable on port 8000.");
           } else if (axiosErr.response?.status === 500) {
             setError("Chatbot service error. Please check backend logs and refresh the page.");
           } else {

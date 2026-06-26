@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.INFO)
 # Load environment variables
 load_dotenv()
 
-# Initialize OpenAI client
+# Initialize OpenAI client when available, but keep the backend runnable without it.
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 LLM_MODEL = os.getenv("LLM_MODEL", "gpt-4o-mini")
 API_TYPE = os.getenv("API_TYPE", "responses")  # Primary or chat-completions
@@ -28,10 +28,7 @@ CONFIDENCE_THRESHOLD_TIER3 = float(os.getenv("CONFIDENCE_THRESHOLD_TIER3", "0.6"
 SESSION_TIMEOUT_HOURS = int(os.getenv("SESSION_TIMEOUT_HOURS", "24"))
 CONVERSATION_HISTORY_MAX_MESSAGES = int(os.getenv("CONVERSATION_HISTORY_MAX_MESSAGES", "8"))
 
-if not OPENAI_API_KEY:
-    raise ValueError("OPENAI_API_KEY not set in .env file")
-
-client = OpenAI(api_key=OPENAI_API_KEY)
+client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
 
 # MVP SESSION STORAGE - Upgrade to PostgreSQL + Redis for persistence, distributed rate limiting, and production scaling
 sessions_db: Dict[str, Dict] = {}
@@ -299,6 +296,33 @@ def get_disease_advice(
     Call GPT-4o mini via Chat Completions API.
     Returns structured JSON response.
     """
+    if client is None:
+        severity = structured_prediction.get("severity", "Unknown")
+        confidence = structured_prediction.get("confidence", 0.0)
+        fallback_answer = (
+            f"Chat advice is not enabled on this deployment, but the model detected "
+            f"{structured_prediction.get('disease_name', 'the uploaded image')} with "
+            f"{confidence * 100:.0f}% confidence. Please review the prediction, "
+            f"keep affected plants isolated if needed, and monitor for spread."
+        )
+
+        return {
+            "status": "success",
+            "answer": fallback_answer,
+            "urgency_level": "low" if severity == "Healthy" else ("medium" if severity == "Mild" else "high"),
+            "safe_next_steps": [
+                "Check the plant again in good lighting",
+                "Compare the result with nearby leaves",
+                "Use the prediction as a guide, not a final diagnosis"
+            ],
+            "follow_up_questions": [
+                "How can I improve the image quality?",
+                "What signs should I monitor next?",
+                "Should I isolate the affected plant?"
+            ],
+            "disclaimer": "Chatbot is unavailable on this deployment because no OpenAI key is configured."
+        }
+
     # Build context from structured prediction
     context = build_structured_context(structured_prediction, confidence_tier)
     
