@@ -411,15 +411,25 @@ export const ImageUpload = () => {
   const [chatbotMinimized, setChatbotMinimized] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const carouselImages = [Photo1, Photo2, Photo3];
+  const apiUrl = process.env.REACT_APP_API_URL?.trim();
 
   const sendFile = useCallback(async () => {
     if (image) {
       try {
+        if (!apiUrl) {
+          alert("Backend API URL is not configured for this deployment. Set REACT_APP_API_URL in Vercel to your deployed backend /predict endpoint.");
+          setIsloading(false);
+          setImage(false);
+          setSelectedFile(null);
+          setPreview(null);
+          return;
+        }
+
         let formData = new FormData();
         formData.append("file", selectedFile);
         let res = await axios({
           method: "post",
-          url: process.env.REACT_APP_API_URL,
+          url: apiUrl,
           data: formData,
           timeout: 60000, // 60 second timeout
         });
@@ -436,7 +446,7 @@ export const ImageUpload = () => {
         } else if (error.response?.status === 500) {
           alert('Server error. Please check the backend logs.');
         } else {
-          alert('Failed to upload image. Please ensure the backend API is running on ' + process.env.REACT_APP_API_URL);
+          alert('Failed to upload image. Please ensure the backend API is deployed and REACT_APP_API_URL is set correctly.');
         }
         setImage(false);
         setSelectedFile(null);
@@ -445,7 +455,7 @@ export const ImageUpload = () => {
         setIsloading(false);
       }
     }
-  }, [image, selectedFile]);
+  }, [apiUrl, image, selectedFile]);
 
   const clearData = () => {
     setData(null);
