@@ -265,7 +265,7 @@ const ChatBot = ({ prediction }) => {
     };
 
     initializeChat();
-  }, [prediction, API_BASE_URL]);
+  }, [prediction, CHAT_BASE_URL]);
 
   // Auto-scroll to latest message
   useEffect(() => {

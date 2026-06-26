@@ -8,7 +8,7 @@ import Container from "@material-ui/core/Container";
 import React from "react";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import { Paper, CardActionArea, CardMedia, Grid, Button, CircularProgress, IconButton } from "@material-ui/core";
+import { Paper, CardActionArea, CardMedia, Grid, Button, CircularProgress } from "@material-ui/core";
 import cblogo from "./cblogo.png";
 import bgImage from "./bg.png";
 import Photo1 from "./Photo-1.jpg";
@@ -17,9 +17,6 @@ import Photo3 from "./Photo-3.jpg";
 import { DropzoneArea } from 'material-ui-dropzone';
 import { common } from '@material-ui/core/colors';
 import Clear from '@material-ui/icons/Clear';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import Close from '@material-ui/icons/Close';
 import ChatBot from "./ChatBot";
 
 
@@ -472,7 +469,7 @@ export const ImageUpload = () => {
     }
     setIsloading(true);
     sendFile();
-  }, [preview]);
+  }, [preview, sendFile]);
 
   useEffect(() => {
     const carouselInterval = setInterval(() => {
@@ -1198,7 +1195,6 @@ export const ImageUpload = () => {
                   color: "#ffffff",
                   position: "relative",
                   overflow: "hidden",
-                  background: color.bg
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = "translateY(-8px)";
