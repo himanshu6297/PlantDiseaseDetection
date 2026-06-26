@@ -9,6 +9,22 @@ frontend/npm-debug.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
 
+# Android
+android-app/.gradle/
+android-app/.idea/
+android-app/.cxx/
+android-app/build/
+android-app/app/build/
+android-app/gradle/android/
+android-app/gradle/caches/
+android-app/gradle/daemon/
+android-app/gradle/kotlin-profile/
+android-app/gradle/native/
+android-app/gradle/wrapper/dists/
+android-app/local.properties
+android-app/*.iml
+android-app/app/*.iml
+
 # Backend
 backend/__pycache__/
 backend/*.py[cod]

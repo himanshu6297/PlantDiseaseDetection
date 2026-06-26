@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#f5f5f5"
+    android:paddingTop="16dp">
+
+    <!-- Top Button Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:background="#ffffff"
+        android:elevation="4dp">
+
+        <Button
+            android:id="@+id/cameraButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="📷 Camera"
+            android:textColor="#ffffff"
+            android:background="#4CAF50"
+            android:textSize="12sp"
+            android:elevation="4dp" />
+
+        <Button
+            android:id="@+id/galleryButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:text="🖼️ Gallery"
+            android:textColor="#ffffff"
+            android:background="#2196F3"
+            android:textSize="12sp"
+            android:elevation="4dp" />
+
+        <Button
+            android:id="@+id/historyButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:text="📋 History"
+            android:textColor="#ffffff"
+            android:background="#FF9800"
+            android:textSize="12sp"
+            android:elevation="4dp" />
+    </LinearLayout>
+
+    <!-- Main Content ScrollView -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Image Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#ffffff"
+                android:elevation="2dp"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <android.widget.ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="280dp"
+                    android:scaleType="centerCrop"
+                    android:background="#e0e0e0"
+                    android:contentDescription="Selected plant image" />
+
+                <Button
+                    android:id="@+id/scanButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="16dp"
+                    android:text="🔍 Scan Plant"
+                    android:textColor="#ffffff"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:background="#1f2f52"
+                    android:elevation="4dp" />
+            </LinearLayout>
+
+            <!-- Progress Bar -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone" />
+
+            <!-- Results Section -->
+            <ScrollView
+                android:id="@+id/resultScrollView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- Disease Detected Card -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#ffffff"
+                        android:elevation="2dp"
+                        android:padding="16dp"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🌱 Detection Result"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="#1f2f52"
+                            android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:id="@+id/resultTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:textColor="#333"
+                            android:layout_marginBottom="8dp" />
+
+                        <TextView
+                            android:id="@+id/confidenceTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:textColor="#d32f2f"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Advice Card -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#ffffff"
+                        android:elevation="2dp"
+                        android:padding="16dp"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:id="@+id/adviceTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="13sp"
+                            android:textColor="#333"
+                            android:lineSpacingMultiplier="1.5" />
+                    </LinearLayout>
+
+                    <!-- Chatbot Card -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@drawable/chatbot_bg"
+                        android:elevation="2dp"
+                        android:padding="16dp"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🤖 Plant Health Advisor"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#ffffff"
+                            android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:id="@+id/chatbotTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="13sp"
+                            android:textColor="#ffffff"
+                            android:lineSpacingMultiplier="1.5" />
+                    </LinearLayout>
+
+                    <!-- All Predictions -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="#ffffff"
+                        android:elevation="2dp"
+                        android:padding="16dp"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="📊 All Predictions"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#1f2f52"
+                            android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:id="@+id/allPredictionsTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="12sp"
+                            android:textColor="#666"
+                            android:fontFamily="monospace" />
+                    </LinearLayout>
+                </LinearLayout>
+            </ScrollView>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

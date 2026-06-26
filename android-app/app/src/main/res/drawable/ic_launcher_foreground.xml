@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- A more "plant-like" icon: A leaf -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,20 C40,20 25,35 25,55 C25,75 45,88 54,88 C63,88 83,75 83,55 C83,35 68,20 54,20 Z M54,83 C48,83 31,72 31,55 C31,40 43,26 54,26 C65,26 77,40 77,55 C77,72 60,83 54,83 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M53,26 L55,26 L55,88 L53,88 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,45 L65,35 L66,37 L54,47 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,55 L65,45 L66,47 L54,57 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,65 L65,55 L66,57 L54,67 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,45 L43,35 L42,37 L54,47 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,55 L43,45 L42,47 L54,57 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,65 L43,55 L42,57 L54,67 Z" />
+</vector>

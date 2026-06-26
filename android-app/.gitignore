@@ -1,0 +1,30 @@
+# Android App Project Root
+
+This is the root directory for the PlantVillage Android app prototype.
+
+## Quick Links
+
+- 📖 **[QUICK START](QUICK_START.md)** - Setup in 5 minutes
+- 📚 **[Full Documentation](README.md)** - Complete guide
+- 🔄 **[Model Conversion](convert_model.py)** - Convert Keras to TFLite
+- 💻 **[App Code](app/src/main/java/com/plantvillage/detection/)** - Kotlin source
+
+## Directories
+
+```
+├── app/                   # Android app module
+├── build.gradle           # Root build config
+├── settings.gradle        # Project settings
+├── convert_model.py       # Model converter script
+├── QUICK_START.md         # 5-minute setup guide
+└── README.md              # Full documentation
+```
+
+## Next Steps
+
+1. **Setup**: Follow `QUICK_START.md` (5 minutes)
+2. **Model**: Run `python convert_model.py` to convert Keras to TFLite
+3. **Build**: Open in Android Studio and click Run
+4. **Test**: Upload plant images and test predictions
+
+See `README.md` for detailed setup and troubleshooting.
