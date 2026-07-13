@@ -1,7 +1,4 @@
 {
-  "env": {
-    "REACT_APP_API_URL": "https://plant-disease-backend-prve.onrender.com/predict"
-  },
   "rewrites": [
     {
       "source": "/(.*)",

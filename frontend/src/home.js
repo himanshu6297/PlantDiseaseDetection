@@ -412,7 +412,7 @@ export const ImageUpload = () => {
   const [chatbotMinimized, setChatbotMinimized] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const carouselImages = [Photo1, Photo2, Photo3];
-  const apiUrl = process.env.REACT_APP_API_URL?.trim() || "https://plant-disease-backend-prve.onrender.com/predict";
+  const apiUrl = process.env.REACT_APP_API_URL?.trim() || "http://localhost:8000/predict";
   const uploadTimeoutSeconds = 180;
 
   const resizeImageFile = useCallback((file, maxDimension = 1024, quality = 0.85) => {
