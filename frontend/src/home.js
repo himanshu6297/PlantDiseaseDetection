@@ -411,20 +411,11 @@ export const ImageUpload = () => {
   const [chatbotMinimized, setChatbotMinimized] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const carouselImages = [Photo1, Photo2, Photo3];
-  const apiUrl = process.env.REACT_APP_API_URL?.trim();
+  const apiUrl = process.env.REACT_APP_API_URL?.trim() || "https://plant-disease-backend-prve.onrender.com/predict";
 
   const sendFile = useCallback(async () => {
     if (image) {
       try {
-        if (!apiUrl) {
-          alert("Backend API URL is not configured for this deployment. Set REACT_APP_API_URL in Vercel to your deployed backend /predict endpoint.");
-          setIsloading(false);
-          setImage(false);
-          setSelectedFile(null);
-          setPreview(null);
-          return;
-        }
-
         let formData = new FormData();
         formData.append("file", selectedFile);
         let res = await axios({
