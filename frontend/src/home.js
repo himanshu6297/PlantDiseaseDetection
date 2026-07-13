@@ -408,10 +408,12 @@ export const ImageUpload = () => {
   const [data, setData] = useState();
   const [image, setImage] = useState(false);
   const [isLoading, setIsloading] = useState(false);
+  const [uploadSeconds, setUploadSeconds] = useState(0);
   const [chatbotMinimized, setChatbotMinimized] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const carouselImages = [Photo1, Photo2, Photo3];
   const apiUrl = process.env.REACT_APP_API_URL?.trim() || "https://plant-disease-backend-prve.onrender.com/predict";
+  const uploadTimeoutSeconds = 180;
 
   const sendFile = useCallback(async () => {
     if (image) {
@@ -422,7 +424,7 @@ export const ImageUpload = () => {
           method: "post",
           url: apiUrl,
           data: formData,
-          timeout: 60000, // 60 second timeout
+          timeout: uploadTimeoutSeconds * 1000,
         });
         if (res.status === 200) {
           setData(res.data);
@@ -431,7 +433,7 @@ export const ImageUpload = () => {
       } catch (error) {
         console.error("Upload error:", error);
         if (error.code === 'ECONNABORTED') {
-          alert('Request timed out. Please try again with a smaller image or check if the backend is running.');
+          alert(`Request timed out after ${uploadTimeoutSeconds} seconds. Please try again with a smaller image or check if the backend is running.`);
         } else if (error.response?.status === 400) {
           alert('Invalid image format. Please upload a valid image file.');
         } else if (error.response?.status === 500) {
@@ -471,6 +473,19 @@ export const ImageUpload = () => {
     setIsloading(true);
     sendFile();
   }, [preview, sendFile]);
+
+  useEffect(() => {
+    if (!isLoading) {
+      setUploadSeconds(0);
+      return undefined;
+    }
+
+    const timer = setInterval(() => {
+      setUploadSeconds((seconds) => seconds + 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isLoading]);
 
   useEffect(() => {
     const carouselInterval = setInterval(() => {
@@ -933,6 +948,9 @@ export const ImageUpload = () => {
                 <CircularProgress size={60} color="secondary" className={classes.loader} />
                 <Typography style={{ marginTop: 24, fontSize: 16, fontWeight: 700, color: "#be6a77" }}>
                   🔄 Analyzing...
+                </Typography>
+                <Typography style={{ marginTop: 8, fontSize: 14, fontWeight: 600, color: "#666" }}>
+                  {uploadSeconds}s elapsed of {uploadTimeoutSeconds}s timeout
                 </Typography>
               </div>}
             </Grid>
