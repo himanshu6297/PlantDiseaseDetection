@@ -11,6 +11,14 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple
 from openai import OpenAI
 from dotenv import load_dotenv
+from session_store import (
+    initialize_session_store,
+    store_conversation as db_store_conversation,
+    get_session_history as db_get_session_history,
+    cleanup_expired_sessions as db_cleanup_expired_sessions,
+    check_rate_limit as db_check_rate_limit,
+    get_remaining_rate_limit as db_get_remaining_rate_limit,
+)
 
 # Setup logging
 logger = logging.getLogger(__name__)
@@ -29,6 +37,7 @@ SESSION_TIMEOUT_HOURS = int(os.getenv("SESSION_TIMEOUT_HOURS", "24"))
 CONVERSATION_HISTORY_MAX_MESSAGES = int(os.getenv("CONVERSATION_HISTORY_MAX_MESSAGES", "8"))
 
 client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
+SESSION_STORE_ENABLED = initialize_session_store()
 
 # MVP SESSION STORAGE - Upgrade to PostgreSQL + Redis for persistence, distributed rate limiting, and production scaling
 sessions_db: Dict[str, Dict] = {}
@@ -185,6 +194,10 @@ def store_conversation(session_id: str, role: str, content: str, timestamp: str 
     """
     Store message in session history (MVP in-memory storage).
     """
+    if SESSION_STORE_ENABLED:
+        db_store_conversation(session_id, role, content, timestamp)
+        return
+
     if session_id not in sessions_db:
         sessions_db[session_id] = {
             "messages": [],
@@ -206,6 +219,9 @@ def get_session_history(session_id: str) -> List[Dict]:
     """
     Retrieve trimmed conversation history for session.
     """
+    if SESSION_STORE_ENABLED:
+        return db_get_session_history(session_id, CONVERSATION_HISTORY_MAX_MESSAGES)
+
     if session_id not in sessions_db:
         return []
     
@@ -218,12 +234,16 @@ def cleanup_expired_sessions() -> None:
     Auto-expire sessions after 24 hours of inactivity.
     Runs on app startup and periodically.
     """
+    if SESSION_STORE_ENABLED:
+        db_cleanup_expired_sessions(SESSION_TIMEOUT_HOURS)
+        return
+
     current_time = datetime.utcnow()
     expired_sessions = []
     
     for session_id, session_data in sessions_db.items():
         last_activity = datetime.fromisoformat(session_data["last_activity"])
-        if (current_time - last_activity).hours > SESSION_TIMEOUT_HOURS:
+        if (current_time - last_activity).total_seconds() > SESSION_TIMEOUT_HOURS * 3600:
             expired_sessions.append(session_id)
     
     for session_id in expired_sessions:
@@ -239,6 +259,9 @@ def check_rate_limit(session_id: str, limit_per_hour: int = 10) -> Tuple[bool, i
     Check if session has exceeded rate limit (10 messages/hour by default).
     Returns: (is_allowed, remaining_limit)
     """
+    if SESSION_STORE_ENABLED:
+        return db_check_rate_limit(session_id, limit_per_hour)
+
     current_time = time.time()
     
     if session_id not in rate_limit_db:
@@ -270,6 +293,9 @@ def check_rate_limit(session_id: str, limit_per_hour: int = 10) -> Tuple[bool, i
 
 def get_remaining_rate_limit(session_id: str, limit_per_hour: int = 10) -> int:
     """Get remaining rate limit for session without incrementing."""
+    if SESSION_STORE_ENABLED:
+        return db_get_remaining_rate_limit(session_id, limit_per_hour)
+
     if session_id not in rate_limit_db:
         return limit_per_hour
     
@@ -411,4 +437,4 @@ def get_disease_advice(
 def initialize_chatbot_service():
     """Initialize chatbot service on app startup."""
     cleanup_expired_sessions()
-    print("✓ Chatbot service initialized")
+    print(f"✓ Chatbot service initialized (session store: {'Supabase Postgres' if SESSION_STORE_ENABLED else 'in-memory'})")

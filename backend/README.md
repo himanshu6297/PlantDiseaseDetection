@@ -43,7 +43,24 @@ Edit `.env` file in the backend folder:
 MODEL_PATH=Final_PlantVillage38_model.keras
 PORT=8000
 ENVIRONMENT=development
+SUPABASE_DB_URL=postgresql://postgres:your-password@db.your-project-ref.supabase.co:5432/postgres
 ```
+
+### Supabase setup
+
+This backend uses Supabase Postgres for chatbot session history and rate limiting when `SUPABASE_DB_URL` is set.
+
+1. Create a Supabase project.
+2. Open the database connection settings and copy the Postgres connection string.
+3. Set `SUPABASE_DB_URL` in your backend environment.
+4. Restart the backend. The required tables are created automatically on startup.
+
+Required tables:
+- `chatbot_sessions`
+- `chatbot_messages`
+- `chatbot_rate_limits`
+
+If `SUPABASE_DB_URL` is not set, the backend falls back to in-memory storage.
 
 ---
 
@@ -61,32 +78,21 @@ python -m uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
 
 ---
 
-## Deploying on Render
+## Deploying
 
-This project includes a [Render blueprint](../render.yaml) for the backend API.
-
-### 1. Deploy the backend
-1. Push your code to GitHub.
-2. In Render, create a new service and select your repository.
-3. Use the blueprint or point the service to the `backend` folder.
-4. Render will use:
-  - Build: `pip install -r requirements.txt`
-  - Start: `uvicorn main:app --host 0.0.0.0 --port $PORT`
-
-### 2. Configure environment variables
-Set these in the Render dashboard if needed:
+You can deploy the FastAPI backend on any Python host. Set the following environment variables on the host:
 ```env
 MODEL_PATH=Final_PlantVillage38_model.keras
 ENVIRONMENT=production
 OPENAI_API_KEY=your_key_here (optional)
+SUPABASE_DB_URL=postgresql://postgres:your-password@db.your-project-ref.supabase.co:5432/postgres
 ```
 
 If `OPENAI_API_KEY` is not provided, the API still runs and the chatbot returns a fallback response instead of failing startup.
 
-### 3. Update the frontend
-Set the frontend production URL to the deployed Render endpoint:
+Set the frontend production URL to your deployed backend endpoint:
 ```env
-REACT_APP_API_URL=https://your-render-service.onrender.com/predict
+REACT_APP_API_URL=https://your-backend-url.com/predict
 ```
 
 ---

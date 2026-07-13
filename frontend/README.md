@@ -65,6 +65,23 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/a
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
 
+## Supabase Setup
+
+Install the client packages:
+
+```bash
+npm install @supabase/supabase-js @supabase/ssr
+```
+
+Add these variables to `.env.local`:
+
+```env
+REACT_APP_SUPABASE_URL=https://your-project-ref.supabase.co
+REACT_APP_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
+
+For this CRA app, use [src/supabaseClient.js](src/supabaseClient.js) to access Supabase from the browser. The `@supabase/ssr` package is installed too, but the Next.js-specific `page.tsx` and middleware files you listed are not used in this project structure.
+
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
