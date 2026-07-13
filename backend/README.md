@@ -43,12 +43,13 @@ Edit `.env` file in the backend folder:
 MODEL_PATH=Final_PlantVillage38_model.keras
 PORT=8000
 ENVIRONMENT=development
+SUPABASE_URL=https://kooqabfufjjhnhrcjero.supabase.co
 SUPABASE_DB_URL=postgresql://postgres:your-password@db.your-project-ref.supabase.co:5432/postgres
 ```
 
 ### Supabase setup
 
-This backend uses Supabase Postgres for chatbot session history and rate limiting when `SUPABASE_DB_URL` is set.
+This backend uses Supabase Postgres for chatbot session history and rate limiting when `SUPABASE_DB_URL` is set. The Supabase project URL is `https://kooqabfufjjhnhrcjero.supabase.co`.
 
 1. Create a Supabase project.
 2. Open the database connection settings and copy the Postgres connection string.
