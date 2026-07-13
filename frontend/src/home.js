@@ -412,7 +412,10 @@ export const ImageUpload = () => {
   const [chatbotMinimized, setChatbotMinimized] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const carouselImages = [Photo1, Photo2, Photo3];
-  const apiUrl = process.env.REACT_APP_API_URL?.trim() || "http://localhost:8000/predict";
+  const supabaseUrl = process.env.REACT_APP_SUPABASE_URL?.trim();
+  const apiUrl =
+    process.env.REACT_APP_API_URL?.trim() ||
+    (supabaseUrl ? `${supabaseUrl}/functions/v1/clever-function` : "http://localhost:8000/predict");
   const uploadTimeoutSeconds = 180;
 
   const resizeImageFile = useCallback((file, maxDimension = 1024, quality = 0.85) => {
@@ -511,7 +514,7 @@ export const ImageUpload = () => {
         } else if (error.response?.status === 500) {
           alert('Server error. Please check the backend logs.');
         } else {
-          alert('Failed to upload image. Please ensure the backend API is deployed and REACT_APP_API_URL is set correctly.');
+          alert('Failed to upload image. Please ensure REACT_APP_SUPABASE_URL and REACT_APP_SUPABASE_ANON_KEY are set in Vercel, or set REACT_APP_API_URL to your deployed function URL.');
         }
         setImage(false);
         setSelectedFile(null);

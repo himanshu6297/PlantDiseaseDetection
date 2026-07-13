@@ -168,7 +168,10 @@ const ChatBot = ({ prediction }) => {
   const messagesEndRef = useRef(null);
 
   // Extract base API URL (remove /predict if present for chat endpoint)
-  const PREDICT_URL = process.env.REACT_APP_API_URL?.trim() || "http://localhost:8000/predict";
+  const supabaseUrl = process.env.REACT_APP_SUPABASE_URL?.trim();
+  const PREDICT_URL =
+    process.env.REACT_APP_API_URL?.trim() ||
+    (supabaseUrl ? `${supabaseUrl}/functions/v1/clever-function` : "http://localhost:8000/predict");
   const API_BASE_URL = PREDICT_URL.replace("/predict", "") || "http://localhost:8000";
   
   // Backend both API and chat endpoints run on same host
