@@ -415,11 +415,73 @@ export const ImageUpload = () => {
   const apiUrl = process.env.REACT_APP_API_URL?.trim() || "https://plant-disease-backend-prve.onrender.com/predict";
   const uploadTimeoutSeconds = 180;
 
+  const resizeImageFile = useCallback((file, maxDimension = 1024, quality = 0.85) => {
+    return new Promise((resolve, reject) => {
+      if (!file) {
+        resolve(file);
+        return;
+      }
+
+      if (file.size <= 1024 * 1024) {
+        resolve(file);
+        return;
+      }
+
+      const image = new window.Image();
+      const objectUrl = URL.createObjectURL(file);
+
+      image.onload = () => {
+        try {
+          const { width, height } = image;
+          const scale = Math.min(1, maxDimension / Math.max(width, height));
+          const targetWidth = Math.round(width * scale);
+          const targetHeight = Math.round(height * scale);
+
+          const canvas = document.createElement("canvas");
+          canvas.width = targetWidth;
+          canvas.height = targetHeight;
+
+          const context = canvas.getContext("2d");
+          if (!context) {
+            resolve(file);
+            return;
+          }
+
+          context.drawImage(image, 0, 0, targetWidth, targetHeight);
+          canvas.toBlob(
+            (blob) => {
+              URL.revokeObjectURL(objectUrl);
+              if (!blob) {
+                resolve(file);
+                return;
+              }
+
+              resolve(new File([blob], file.name, { type: blob.type || file.type }));
+            },
+            file.type || "image/jpeg",
+            quality
+          );
+        } catch (error) {
+          URL.revokeObjectURL(objectUrl);
+          resolve(file);
+        }
+      };
+
+      image.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        reject(new Error("Failed to load image for resizing."));
+      };
+
+      image.src = objectUrl;
+    });
+  }, []);
+
   const sendFile = useCallback(async () => {
     if (image) {
       try {
+        const uploadFile = await resizeImageFile(selectedFile);
         let formData = new FormData();
-        formData.append("file", selectedFile);
+        formData.append("file", uploadFile);
         let res = await axios({
           method: "post",
           url: apiUrl,
@@ -448,7 +510,7 @@ export const ImageUpload = () => {
         setIsloading(false);
       }
     }
-  }, [apiUrl, image, selectedFile]);
+  }, [apiUrl, image, resizeImageFile, selectedFile]);
 
   const clearData = () => {
     setData(null);
