@@ -480,12 +480,22 @@ export const ImageUpload = () => {
     if (image) {
       try {
         const uploadFile = await resizeImageFile(selectedFile);
+        const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY?.trim();
+
+        if (!supabaseAnonKey) {
+          throw new Error("REACT_APP_SUPABASE_ANON_KEY is missing");
+        }
+
         let formData = new FormData();
         formData.append("file", uploadFile);
         let res = await axios({
           method: "post",
           url: apiUrl,
           data: formData,
+          headers: {
+            apikey: supabaseAnonKey,
+            Authorization: `Bearer ${supabaseAnonKey}`,
+          },
           timeout: uploadTimeoutSeconds * 1000,
         });
         if (res.status === 200) {
